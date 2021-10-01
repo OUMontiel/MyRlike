@@ -67,6 +67,6 @@ VARCTE → id | cte-l | cte-f | cte-c
 | id | `[a-zA-Z_][a-zA-Z_0-9]*` |
 | int | `\d+` |
 | float | `\d+\.\d+` |
-| char | `\'([^\\\']|(\\\')|(\\\\))?\'` |
-| strings | `\"([^\\\"]|(\\\")|(\\\\))*\"` |
-| constants | `{‘program’, ‘main()’, ‘VARS’, ‘function’, ‘return’, ‘read’, ‘write’, ‘if’, ‘then’, ‘else’, ‘while’, ‘do’, ‘for’, ‘to’, ‘int’, ‘float’, ‘char’, ‘void’, ‘;’, ‘:’, ‘,’, ‘{‘, ‘}’, ‘[‘, ‘]’, ‘(‘, ‘)’, ‘=’, ‘||’, ‘&&’, ‘==’, ‘!=’, ‘<’, ‘<=’, ‘>’, ‘>=’, ‘*’, ‘/’, ‘%’, ‘+’, ‘-’}` |
+| char | `\'([^\\\']\|(\\\')\|(\\\\))?\'` |
+| strings | `\"([^\\\"]\|(\\\")\|(\\\\))*\"` |
+| constants | `{‘program’, ‘main()’, ‘VARS’, ‘function’, ‘return’, ‘read’, ‘write’, ‘if’, ‘then’, ‘else’, ‘while’, ‘do’, ‘for’, ‘to’, ‘int’, ‘float’, ‘char’, ‘void’, ‘;’, ‘:’, ‘,’, ‘{‘, ‘}’, ‘[‘, ‘]’, ‘(‘, ‘)’, ‘=’, ‘\|\|’, ‘&&’, ‘==’, ‘!=’, ‘<’, ‘<=’, ‘>’, ‘>=’, ‘*’, ‘/’, ‘%’, ‘+’, ‘-’}` |
