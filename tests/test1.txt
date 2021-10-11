@@ -1,10 +1,12 @@
-Program MyRlike ;
+Program MyRlike;
 VARS
     int: i, j, p, arreglo[10];
     float: valor;
 
-function int fact(int j)
-VARS int: i; {
+function char f1(char par_c_1, float par_f_2)
+VARS
+    char: var_c_1;
+    int: var_i_2, var_i_3; {
     i = j + (p - j * 2 + j);
     if (j == 1) then {
         return(j);
@@ -14,19 +16,29 @@ VARS int: i; {
     }
 }
 
-function void calcula(int y)
-VARS int: x; {
+function float f2(float par_f_3)
+VARS
+    float: var_f_4, var_f_5; {
+    i = j + (p - j * 2 + j);
+    if (j == 1) then {
+        return(j);
+    }
+    else {
+        return(j * 2);
+    }
+}
+
+function int f3()
+VARS
+    int: var_i_6; {
     x = 1;
     while (x < 11) do {
         y = y * arreglo[x];
         x = x + 1;
-        write(arreglo[x]);
     }
-    write("acumulado", y);
 }
 
 main() {
-    read(p);
     j = p * 2;
     i = p * p;
     for i = 1 to 10 do {
@@ -36,7 +48,6 @@ main() {
     while (i > 0) do {
         calcula(p - i);
         j = 4;
-        write(j, i);
         i = i + 1;
     }
 }

@@ -1,6 +1,8 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import sys
+from pydoc import locate
+import VariableSemantics
 
 tokens = [
     'PROGRAM',
@@ -207,6 +209,7 @@ def p_programa(p):
     programa : PROGRAM ID SEMICOLON programa1 programa2 MAIN OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
     '''
     print('programa')
+    VariableSemantics.functionIDsStack.append(p[2])
 
 def p_programa1(p):
     '''
@@ -234,19 +237,46 @@ def p_vars(p):
     vars : VARS vars1
     '''
     print('vars')
+    VariableSemantics.buildTable()
+    VariableSemantics.variableTypesCountStack.clear()
+    VariableSemantics.variableTypesCounter = -1
 
 def p_vars1(p):
     '''
-    vars1 : tipo COLON lista_ids SEMICOLON vars2
+    vars1 : tipo COLON vars2
     '''
     print('vars1')
 
 def p_vars2(p):
     '''
-    vars2 : vars1
-          | epsilon
+    vars2 : ID vars3
     '''
     print('vars2')
+    VariableSemantics.variableIDsStack.append(p[1])
+    VariableSemantics.variableTypesCountStack[VariableSemantics.variableTypesCounter] += 1
+
+def p_vars3(p):
+    '''
+    vars3 : OPENBOX exp CLOSEBOX vars4
+          | vars4
+    '''
+    print('vars3')
+
+def p_vars4(p):
+    '''
+    vars4 : SEMICOLON vars5
+          | COMMA vars2
+    '''
+    print('vars4')
+
+def p_vars5(p):
+    '''
+    vars5 : vars1
+          | epsilon
+    '''
+    print('vars5')
+    VariableSemantics.variableTypesCounter += 1
+    VariableSemantics.variableTypesCountStack.append(0)
 
 def p_lista_ids(p):
     '''
@@ -275,6 +305,8 @@ def p_tipo(p):
          | TYPECHAR
     '''
     print('tipo')
+    print('----------------> ', p[1], ' : ', locate(p[1]))
+    VariableSemantics.typesStack.append(p[1])
 
 def p_funciones(p):
     '''
@@ -289,52 +321,57 @@ def p_funciones1(p):
                | TYPEVOID funciones2
     '''
     print('funciones1')
+    if (p[1] == 'void'):
+        print()
+        VariableSemantics.typesStack.append(p[1])
 
 def p_funciones2(p):
     '''
     funciones2 : ID OPENPAR funciones3
     '''
     print('funciones2')
+    VariableSemantics.functionIDsStack.append(p[1])
 
 def p_funciones3(p):
     '''
-    funciones3 : funciones4
-               | funciones6
+    funciones3 : parameters funciones4
+               | funciones4
     '''
     print('funciones3')
 
 def p_funciones4(p):
     '''
-    funciones4 : tipo ID funciones5
+    funciones4 : CLOSEPAR funciones5
     '''
     print('funciones4')
 
 def p_funciones5(p):
     '''
-    funciones5 : COMMA funciones4
-               | funciones6
+    funciones5 : vars OPENCURLY funciones6
+               | OPENCURLY funciones6
     '''
     print('funciones5')
 
 def p_funciones6(p):
     '''
-    funciones6 : CLOSEPAR funciones7
+    funciones6 : estatutos funciones6
+               | CLOSECURLY funciones
     '''
     print('funciones6')
 
-def p_funciones7(p):
+def p_parameters(p):
     '''
-    funciones7 : vars OPENCURLY funciones8
-               | OPENCURLY funciones8
+    parameters : tipo ID parameters1
     '''
-    print('funciones7')
+    print('parameters')
+    VariableSemantics.parameterIDsStack.append(p[2])
 
-def p_funciones8(p):
+def p_parameters1(p):
     '''
-    funciones8 : estatutos funciones8
-               | CLOSECURLY funciones
+    parameters1 : COMMA parameters
+                | epsilon
     '''
-    print('funciones8')
+    print('parameters1')
 
 def p_estatutos(p):
     '''
@@ -630,3 +667,5 @@ while True:
     except EOFError:
         break
     parser.parse(''.join(s).replace("\n", " "))
+    VariableSemantics.buildFunctionDirectory()
+    VariableSemantics.printFunctionDirectory()
