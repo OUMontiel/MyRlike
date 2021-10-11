@@ -305,7 +305,6 @@ def p_tipo(p):
          | TYPECHAR
     '''
     print('tipo')
-    print('----------------> ', p[1], ' : ', locate(p[1]))
     VariableSemantics.typesStack.append(p[1])
 
 def p_funciones(p):

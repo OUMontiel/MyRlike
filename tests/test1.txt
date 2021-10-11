@@ -28,7 +28,7 @@ VARS
     }
 }
 
-function int f3()
+function void f3()
 VARS
     int: var_i_6; {
     x = 1;

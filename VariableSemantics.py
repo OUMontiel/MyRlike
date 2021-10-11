@@ -8,18 +8,13 @@ variableIDsStack = []
 variableTypesCountStack = []
 variableTypesCounter = -1
 parameterIDsStack = []
-typesStack = ['void']
+typesStack = []
 
 def storeFunction(id, type, kind, table):
     print(id, type, kind, table)
     functionDirectory[id] = [type, kind, table]
 
 def buildTable():
-    print(variableIDsStack)
-    print(variableTypesCountStack)
-    print(parameterIDsStack)
-    print(typesStack)
-
     variables = {}
     while(len(variableTypesCountStack) > 0):
         for i in range(0, variableTypesCountStack.pop(0)):
@@ -38,7 +33,10 @@ def buildTable():
             variables[parameterIDsStack.pop(0)] = typesStack.pop()
 
     variableTablesStack.append(variables)
-    functionTypesStack.append(typesStack.pop())
+    if typesStack:
+        functionTypesStack.append(typesStack.pop())
+    else:
+        functionTypesStack.append('void')
 
     variableIDsStack.clear()
     variableTypesCountStack.clear()
@@ -47,9 +45,6 @@ def buildTable():
     typesStack.clear()
 
 def buildFunctionDirectory():
-    print(functionIDsStack)
-    print(functionTypesStack)
-    print(variableTablesStack)
     functionDirectory[functionIDsStack.pop()] = [functionTypesStack.pop(0), 'program', variableTablesStack.pop(0)]
     while len(functionIDsStack) > 0:
         functionDirectory[functionIDsStack.pop()] = [functionTypesStack.pop(0), 'function', variableTablesStack.pop(0)]
