@@ -51,10 +51,10 @@ def buildFunctionDirectory():
 
 def printFunctionDirectory():
     for name, data in functionDirectory.items():
-        print('----------------')
         print('Name: ', name)
         print('Type: ', data[0])
         print('Kind: ', data[1])
         print('Variables:')
         for variableName, variableType in data[2].items():
             print('\tName: ', variableName, ' (', variableType, ')')
+        print('------------------------')

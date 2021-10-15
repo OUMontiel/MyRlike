@@ -2,7 +2,8 @@ import ply.lex as lex
 import ply.yacc as yacc
 import sys
 from pydoc import locate
-import VariableSemantics
+import FunctionDirectory
+import SemanticCube
 
 tokens = [
     'PROGRAM',
@@ -46,11 +47,11 @@ tokens = [
     'LE',
     'GT',
     'GE',
+    'PLUS',
+    'MINUS',
     'MULTIPLY',
     'DIVIDE',
     'MODULO',
-    'PLUS',
-    'MINUS',
 ]
 
 reserved = {
@@ -93,11 +94,11 @@ t_LT = r'\<'
 t_LE = r'\<\='
 t_GT = r'\>'
 t_GE = r'\>\='
+t_PLUS = r'\+'
+t_MINUS = r'\-'
 t_MULTIPLY = r'\*'
 t_DIVIDE = r'\/'
 t_MODULO = r'\%'
-t_PLUS = r'\+'
-t_MINUS = r'\-'
 
 t_ignore = r' '
 
@@ -209,7 +210,7 @@ def p_programa(p):
     programa : PROGRAM ID SEMICOLON programa1 programa2 MAIN OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
     '''
     print('programa')
-    VariableSemantics.functionIDsStack.append(p[2])
+    FunctionDirectory.functionIDsStack.append(p[2])
 
 def p_programa1(p):
     '''
@@ -237,9 +238,9 @@ def p_vars(p):
     vars : VARS vars1
     '''
     print('vars')
-    VariableSemantics.buildTable()
-    VariableSemantics.variableTypesCountStack.clear()
-    VariableSemantics.variableTypesCounter = -1
+    FunctionDirectory.buildTable()
+    FunctionDirectory.variableTypesCountStack.clear()
+    FunctionDirectory.variableTypesCounter = -1
 
 def p_vars1(p):
     '''
@@ -252,8 +253,8 @@ def p_vars2(p):
     vars2 : ID vars3
     '''
     print('vars2')
-    VariableSemantics.variableIDsStack.append(p[1])
-    VariableSemantics.variableTypesCountStack[VariableSemantics.variableTypesCounter] += 1
+    FunctionDirectory.variableIDsStack.append(p[1])
+    FunctionDirectory.variableTypesCountStack[FunctionDirectory.variableTypesCounter] += 1
 
 def p_vars3(p):
     '''
@@ -275,8 +276,8 @@ def p_vars5(p):
           | epsilon
     '''
     print('vars5')
-    VariableSemantics.variableTypesCounter += 1
-    VariableSemantics.variableTypesCountStack.append(0)
+    FunctionDirectory.variableTypesCounter += 1
+    FunctionDirectory.variableTypesCountStack.append(0)
 
 def p_lista_ids(p):
     '''
@@ -305,7 +306,7 @@ def p_tipo(p):
          | TYPECHAR
     '''
     print('tipo')
-    VariableSemantics.typesStack.append(p[1])
+    FunctionDirectory.typesStack.append(p[1])
 
 def p_funciones(p):
     '''
@@ -322,14 +323,14 @@ def p_funciones1(p):
     print('funciones1')
     if (p[1] == 'void'):
         print()
-        VariableSemantics.typesStack.append(p[1])
+        FunctionDirectory.typesStack.append(p[1])
 
 def p_funciones2(p):
     '''
     funciones2 : ID OPENPAR funciones3
     '''
     print('funciones2')
-    VariableSemantics.functionIDsStack.append(p[1])
+    FunctionDirectory.functionIDsStack.append(p[1])
 
 def p_funciones3(p):
     '''
@@ -363,7 +364,7 @@ def p_parameters(p):
     parameters : tipo ID parameters1
     '''
     print('parameters')
-    VariableSemantics.parameterIDsStack.append(p[2])
+    FunctionDirectory.parameterIDsStack.append(p[2])
 
 def p_parameters1(p):
     '''
@@ -665,6 +666,10 @@ while True:
             s = file.readlines()
     except EOFError:
         break
+    print('\n\n> ------------------------------------------------------------ <\n                      Analizador Semántico                      \n> ------------------------------------------------------------ <')
     parser.parse(''.join(s).replace("\n", " "))
-    VariableSemantics.buildFunctionDirectory()
-    VariableSemantics.printFunctionDirectory()
+    print('\n\n> ------------------------------------------------------------ <\n                  Directorio de Procedimientos                  \n> ------------------------------------------------------------ <')
+    FunctionDirectory.buildFunctionDirectory()
+    FunctionDirectory.printFunctionDirectory()
+    print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
+    SemanticCube.printSemanticCube()
