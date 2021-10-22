@@ -58,3 +58,14 @@ def printFunctionDirectory():
         for variableName, variableType in data[2].items():
             print('\tName: ', variableName, ' (', variableType, ')')
         print('------------------------')
+
+def resetFunctionDirectory():
+    functionDirectory.clear()
+    functionIDsStack.clear()
+    functionTypesStack.clear()
+    variableTablesStack.clear()
+    variableIDsStack.clear()
+    variableTypesCountStack.clear()
+    variableTypesCounter = -1
+    parameterIDsStack.clear()
+    typesStack.clear()

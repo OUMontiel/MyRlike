@@ -47,9 +47,9 @@ def printDivider():
 def printSemanticCube():
     for type1 in Types:
         print('|---------------------------------------------------------------------------------------------------------------|')
-        print('|                                                 ', end = '')
+        print('|                                                     ', end = '')
         print(type1.name, end = '\t')
-        print('                                                  |')
+        print('                                                |')
         print('|---------------------------------------------------------------------------------------------------------------|')
 
         print('|', end = '\t')
@@ -69,6 +69,6 @@ def printSemanticCube():
                     print('| CHAR', end = '\t')
                 else:
                     print('| error', end = '\t')
-            print()
+            print('|')
             printDivider()
         print()

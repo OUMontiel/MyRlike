@@ -50,7 +50,7 @@ Rule 44    estatutos -> escritura estatutos1
 Rule 45    estatutos -> condicion estatutos1
 Rule 46    estatutos -> while estatutos1
 Rule 47    estatutos -> for estatutos1
-Rule 48    estatutos -> expresion estatutos1
+Rule 48    estatutos -> est_exp estatutos1
 Rule 49    estatutos1 -> estatutos
 Rule 50    estatutos1 -> epsilon
 Rule 51    asignacion -> ID asignacion1 IS expresion SEMICOLON
@@ -83,10 +83,10 @@ Rule 77    for1 -> OPENBOX exp CLOSEBOX
 Rule 78    for1 -> epsilon
 Rule 79    for2 -> estatutos for2
 Rule 80    for2 -> epsilon
-Rule 81    expresion -> or
-Rule 82    or -> and or1
-Rule 83    or1 -> OR or
-Rule 84    or1 -> epsilon
+Rule 81    est_exp -> expresion SEMICOLON
+Rule 82    expresion -> and expresion1
+Rule 83    expresion1 -> OR expresion
+Rule 84    expresion1 -> epsilon
 Rule 85    and -> equal and1
 Rule 86    and1 -> AND and
 Rule 87    and1 -> epsilon
@@ -161,7 +161,7 @@ PLUS                 : 99 113
 PROGRAM              : 1
 READ                 : 60
 RETURN               : 59
-SEMICOLON            : 1 13 51 54 59 60 61
+SEMICOLON            : 1 13 51 54 59 60 61 81
 STRING               : 62
 THEN                 : 66
 TO                   : 76
@@ -192,11 +192,13 @@ equal1               : 88
 escritura            : 44
 escritura1           : 61 64
 escritura2           : 62 63
+est_exp              : 48
 estatutos            : 6 35 49 67 71 74 79
 estatutos1           : 40 41 42 43 44 45 46 47 48
 exp                  : 11 19 52 56 59 76 76 77 92 99 100 111
 exp1                 : 98
-expresion            : 48 51 66 73 108
+expresion            : 51 66 73 81 83 108
+expresion1           : 82
 factor               : 102
 factor1              : 107
 factor2              : 110
@@ -218,8 +220,6 @@ lista_ids            : 20 60 63
 lista_ids1           : 17
 lista_ids2           : 18 19
 llamada              : 41
-or                   : 81 83
-or1                  : 82
 parameters           : 30 38
 parameters1          : 37
 programa             : 0
@@ -633,7 +633,7 @@ state 36
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -643,9 +643,9 @@ state 36
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -665,12 +665,12 @@ state 36
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -688,10 +688,10 @@ state 36
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -757,8 +757,6 @@ state 43
     (101) exp1 -> . epsilon
     (120) epsilon -> .
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
     PLUS            shift and go to state 88
     MINUS           shift and go to state 89
     CLOSEBOX        reduce using rule 120 (epsilon -> .)
@@ -770,26 +768,11 @@ state 43
     NE              reduce using rule 120 (epsilon -> .)
     AND             reduce using rule 120 (epsilon -> .)
     OR              reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    OPENPAR         reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
+    SEMICOLON       reduce using rule 120 (epsilon -> .)
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
     COMMA           reduce using rule 120 (epsilon -> .)
-    SEMICOLON       reduce using rule 120 (epsilon -> .)
     TO              reduce using rule 120 (epsilon -> .)
     DO              reduce using rule 120 (epsilon -> .)
-
-  ! PLUS            [ reduce using rule 120 (epsilon -> .) ]
-  ! MINUS           [ reduce using rule 120 (epsilon -> .) ]
 
     exp1                           shift and go to state 87
     epsilon                        shift and go to state 90
@@ -817,21 +800,9 @@ state 44
     NE              reduce using rule 120 (epsilon -> .)
     AND             reduce using rule 120 (epsilon -> .)
     OR              reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    OPENPAR         reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
+    SEMICOLON       reduce using rule 120 (epsilon -> .)
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
     COMMA           reduce using rule 120 (epsilon -> .)
-    SEMICOLON       reduce using rule 120 (epsilon -> .)
     TO              reduce using rule 120 (epsilon -> .)
     DO              reduce using rule 120 (epsilon -> .)
 
@@ -846,7 +817,6 @@ state 45
     (112) factor1 -> . epsilon
     (120) epsilon -> .
 
-  ! shift/reduce conflict for OPENPAR resolved as shift
     OPENPAR         shift and go to state 97
     OPENBOX         shift and go to state 98
     MULTIPLY        reduce using rule 120 (epsilon -> .)
@@ -864,23 +834,10 @@ state 45
     AND             reduce using rule 120 (epsilon -> .)
     OR              reduce using rule 120 (epsilon -> .)
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
-    COMMA           reduce using rule 120 (epsilon -> .)
     SEMICOLON       reduce using rule 120 (epsilon -> .)
+    COMMA           reduce using rule 120 (epsilon -> .)
     TO              reduce using rule 120 (epsilon -> .)
     DO              reduce using rule 120 (epsilon -> .)
-
-  ! OPENPAR         [ reduce using rule 120 (epsilon -> .) ]
 
     factor1                        shift and go to state 96
     epsilon                        shift and go to state 99
@@ -888,8 +845,7 @@ state 45
 state 46
 
     (108) factor -> OPENPAR . expresion CLOSEPAR
-    (81) expresion -> . or
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -917,11 +873,10 @@ state 46
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
     expresion                      shift and go to state 100
-    or                             shift and go to state 77
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -947,20 +902,8 @@ state 47
     AND             reduce using rule 109 (factor -> funcion .)
     OR              reduce using rule 109 (factor -> funcion .)
     CLOSEPAR        reduce using rule 109 (factor -> funcion .)
-    ID              reduce using rule 109 (factor -> funcion .)
-    RETURN          reduce using rule 109 (factor -> funcion .)
-    READ            reduce using rule 109 (factor -> funcion .)
-    WRITE           reduce using rule 109 (factor -> funcion .)
-    IF              reduce using rule 109 (factor -> funcion .)
-    WHILE           reduce using rule 109 (factor -> funcion .)
-    FOR             reduce using rule 109 (factor -> funcion .)
-    OPENPAR         reduce using rule 109 (factor -> funcion .)
-    INT             reduce using rule 109 (factor -> funcion .)
-    FLOAT           reduce using rule 109 (factor -> funcion .)
-    CHAR            reduce using rule 109 (factor -> funcion .)
-    CLOSECURLY      reduce using rule 109 (factor -> funcion .)
-    COMMA           reduce using rule 109 (factor -> funcion .)
     SEMICOLON       reduce using rule 109 (factor -> funcion .)
+    COMMA           reduce using rule 109 (factor -> funcion .)
     TO              reduce using rule 109 (factor -> funcion .)
     DO              reduce using rule 109 (factor -> funcion .)
 
@@ -1057,7 +1000,6 @@ state 56
     (112) factor1 -> . epsilon
     (120) epsilon -> .
 
-  ! shift/reduce conflict for OPENPAR resolved as shift
     OPENPAR         shift and go to state 97
     OPENBOX         shift and go to state 107
     IS              reduce using rule 120 (epsilon -> .)
@@ -1074,19 +1016,7 @@ state 56
     NE              reduce using rule 120 (epsilon -> .)
     AND             reduce using rule 120 (epsilon -> .)
     OR              reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
-
-  ! OPENPAR         [ reduce using rule 120 (epsilon -> .) ]
+    SEMICOLON       reduce using rule 120 (epsilon -> .)
 
     asignacion1                    shift and go to state 106
     factor1                        shift and go to state 96
@@ -1131,7 +1061,7 @@ state 60
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1141,9 +1071,9 @@ state 60
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1172,12 +1102,12 @@ state 60
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1204,10 +1134,10 @@ state 60
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1228,7 +1158,7 @@ state 61
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1238,9 +1168,9 @@ state 61
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1269,12 +1199,12 @@ state 61
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1301,10 +1231,10 @@ state 61
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1325,7 +1255,7 @@ state 62
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1335,9 +1265,9 @@ state 62
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1366,12 +1296,12 @@ state 62
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1398,10 +1328,10 @@ state 62
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1422,7 +1352,7 @@ state 63
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1432,9 +1362,9 @@ state 63
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1463,12 +1393,12 @@ state 63
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1495,10 +1425,10 @@ state 63
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1519,7 +1449,7 @@ state 64
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1529,9 +1459,9 @@ state 64
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1560,12 +1490,12 @@ state 64
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1592,10 +1522,10 @@ state 64
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1616,7 +1546,7 @@ state 65
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1626,9 +1556,9 @@ state 65
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1657,12 +1587,12 @@ state 65
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1689,10 +1619,10 @@ state 65
     escritura                      shift and go to state 64
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1713,7 +1643,7 @@ state 66
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1723,9 +1653,9 @@ state 66
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1754,12 +1684,12 @@ state 66
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1786,10 +1716,10 @@ state 66
     escritura                      shift and go to state 64
     condicion                      shift and go to state 65
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1810,7 +1740,7 @@ state 67
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1820,9 +1750,9 @@ state 67
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1851,12 +1781,12 @@ state 67
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1883,10 +1813,10 @@ state 67
     escritura                      shift and go to state 64
     condicion                      shift and go to state 65
     while                          shift and go to state 66
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1896,7 +1826,7 @@ state 67
 
 state 68
 
-    (48) estatutos -> expresion . estatutos1
+    (48) estatutos -> est_exp . estatutos1
     (49) estatutos1 -> . estatutos
     (50) estatutos1 -> . epsilon
     (40) estatutos -> . asignacion estatutos1
@@ -1907,7 +1837,7 @@ state 68
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -1917,9 +1847,9 @@ state 68
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -1948,12 +1878,12 @@ state 68
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -1969,7 +1899,7 @@ state 68
   ! PLUS            [ reduce using rule 120 (epsilon -> .) ]
   ! MINUS           [ reduce using rule 120 (epsilon -> .) ]
 
-    expresion                      shift and go to state 68
+    est_exp                        shift and go to state 68
     estatutos1                     shift and go to state 120
     estatutos                      shift and go to state 111
     epsilon                        shift and go to state 112
@@ -1981,9 +1911,9 @@ state 68
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -1993,10 +1923,18 @@ state 68
 
 state 69
 
+    (81) est_exp -> expresion . SEMICOLON
+
+    SEMICOLON       shift and go to state 121
+
+
+state 70
+
     (54) llamada -> funcion . SEMICOLON
     (109) factor -> funcion .
 
-    SEMICOLON       shift and go to state 121
+  ! shift/reduce conflict for SEMICOLON resolved as shift
+    SEMICOLON       shift and go to state 122
     MULTIPLY        reduce using rule 109 (factor -> funcion .)
     DIVIDE          reduce using rule 109 (factor -> funcion .)
     MODULO          reduce using rule 109 (factor -> funcion .)
@@ -2010,28 +1948,18 @@ state 69
     NE              reduce using rule 109 (factor -> funcion .)
     AND             reduce using rule 109 (factor -> funcion .)
     OR              reduce using rule 109 (factor -> funcion .)
-    ID              reduce using rule 109 (factor -> funcion .)
-    RETURN          reduce using rule 109 (factor -> funcion .)
-    READ            reduce using rule 109 (factor -> funcion .)
-    WRITE           reduce using rule 109 (factor -> funcion .)
-    IF              reduce using rule 109 (factor -> funcion .)
-    WHILE           reduce using rule 109 (factor -> funcion .)
-    FOR             reduce using rule 109 (factor -> funcion .)
-    OPENPAR         reduce using rule 109 (factor -> funcion .)
-    INT             reduce using rule 109 (factor -> funcion .)
-    FLOAT           reduce using rule 109 (factor -> funcion .)
-    CHAR            reduce using rule 109 (factor -> funcion .)
-    CLOSECURLY      reduce using rule 109 (factor -> funcion .)
 
-
-state 70
-
-    (59) retorno -> RETURN . OPENPAR exp CLOSEPAR SEMICOLON
-
-    OPENPAR         shift and go to state 122
+  ! SEMICOLON       [ reduce using rule 109 (factor -> funcion .) ]
 
 
 state 71
+
+    (59) retorno -> RETURN . OPENPAR exp CLOSEPAR SEMICOLON
+
+    OPENPAR         shift and go to state 123
+
+
+state 72
 
     (92) compare -> exp . compare1
     (93) compare1 -> . LT compare
@@ -2041,118 +1969,68 @@ state 71
     (97) compare1 -> . epsilon
     (120) epsilon -> .
 
-    LT              shift and go to state 124
-    LE              shift and go to state 125
-    GT              shift and go to state 126
-    GE              shift and go to state 127
+    LT              shift and go to state 125
+    LE              shift and go to state 126
+    GT              shift and go to state 127
+    GE              shift and go to state 128
     EQ              reduce using rule 120 (epsilon -> .)
     NE              reduce using rule 120 (epsilon -> .)
     AND             reduce using rule 120 (epsilon -> .)
     OR              reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    OPENPAR         reduce using rule 120 (epsilon -> .)
-    PLUS            reduce using rule 120 (epsilon -> .)
-    MINUS           reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
-    CLOSEPAR        reduce using rule 120 (epsilon -> .)
     SEMICOLON       reduce using rule 120 (epsilon -> .)
+    CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    compare1                       shift and go to state 123
-    epsilon                        shift and go to state 128
-
-state 72
-
-    (60) lectura -> READ . OPENPAR lista_ids CLOSEPAR SEMICOLON
-
-    OPENPAR         shift and go to state 129
-
+    compare1                       shift and go to state 124
+    epsilon                        shift and go to state 129
 
 state 73
 
-    (61) escritura -> WRITE . OPENPAR escritura1 CLOSEPAR SEMICOLON
+    (60) lectura -> READ . OPENPAR lista_ids CLOSEPAR SEMICOLON
 
     OPENPAR         shift and go to state 130
 
 
 state 74
 
-    (66) condicion -> IF . OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
+    (61) escritura -> WRITE . OPENPAR escritura1 CLOSEPAR SEMICOLON
 
     OPENPAR         shift and go to state 131
 
 
 state 75
 
-    (73) while -> WHILE . OPENPAR expresion CLOSEPAR DO OPENCURLY while1
+    (66) condicion -> IF . OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
 
     OPENPAR         shift and go to state 132
 
 
 state 76
 
-    (76) for -> FOR . ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
+    (73) while -> WHILE . OPENPAR expresion CLOSEPAR DO OPENCURLY while1
 
-    ID              shift and go to state 133
+    OPENPAR         shift and go to state 133
 
 
 state 77
 
-    (81) expresion -> or .
+    (76) for -> FOR . ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
 
-    ID              reduce using rule 81 (expresion -> or .)
-    RETURN          reduce using rule 81 (expresion -> or .)
-    READ            reduce using rule 81 (expresion -> or .)
-    WRITE           reduce using rule 81 (expresion -> or .)
-    IF              reduce using rule 81 (expresion -> or .)
-    WHILE           reduce using rule 81 (expresion -> or .)
-    FOR             reduce using rule 81 (expresion -> or .)
-    OPENPAR         reduce using rule 81 (expresion -> or .)
-    PLUS            reduce using rule 81 (expresion -> or .)
-    MINUS           reduce using rule 81 (expresion -> or .)
-    INT             reduce using rule 81 (expresion -> or .)
-    FLOAT           reduce using rule 81 (expresion -> or .)
-    CHAR            reduce using rule 81 (expresion -> or .)
-    CLOSECURLY      reduce using rule 81 (expresion -> or .)
-    CLOSEPAR        reduce using rule 81 (expresion -> or .)
-    SEMICOLON       reduce using rule 81 (expresion -> or .)
+    ID              shift and go to state 134
 
 
 state 78
 
-    (82) or -> and . or1
-    (83) or1 -> . OR or
-    (84) or1 -> . epsilon
+    (82) expresion -> and . expresion1
+    (83) expresion1 -> . OR expresion
+    (84) expresion1 -> . epsilon
     (120) epsilon -> .
 
-    OR              shift and go to state 135
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    OPENPAR         reduce using rule 120 (epsilon -> .)
-    PLUS            reduce using rule 120 (epsilon -> .)
-    MINUS           reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
-    CLOSEPAR        reduce using rule 120 (epsilon -> .)
+    OR              shift and go to state 136
     SEMICOLON       reduce using rule 120 (epsilon -> .)
+    CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    or1                            shift and go to state 134
-    epsilon                        shift and go to state 136
+    expresion1                     shift and go to state 135
+    epsilon                        shift and go to state 137
 
 state 79
 
@@ -2161,27 +2039,13 @@ state 79
     (87) and1 -> . epsilon
     (120) epsilon -> .
 
-    AND             shift and go to state 138
+    AND             shift and go to state 139
     OR              reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    OPENPAR         reduce using rule 120 (epsilon -> .)
-    PLUS            reduce using rule 120 (epsilon -> .)
-    MINUS           reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
-    CLOSEPAR        reduce using rule 120 (epsilon -> .)
     SEMICOLON       reduce using rule 120 (epsilon -> .)
+    CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    and1                           shift and go to state 137
-    epsilon                        shift and go to state 139
+    and1                           shift and go to state 138
+    epsilon                        shift and go to state 140
 
 state 80
 
@@ -2191,29 +2055,15 @@ state 80
     (91) equal1 -> . epsilon
     (120) epsilon -> .
 
-    EQ              shift and go to state 141
-    NE              shift and go to state 142
+    EQ              shift and go to state 142
+    NE              shift and go to state 143
     AND             reduce using rule 120 (epsilon -> .)
     OR              reduce using rule 120 (epsilon -> .)
-    ID              reduce using rule 120 (epsilon -> .)
-    RETURN          reduce using rule 120 (epsilon -> .)
-    READ            reduce using rule 120 (epsilon -> .)
-    WRITE           reduce using rule 120 (epsilon -> .)
-    IF              reduce using rule 120 (epsilon -> .)
-    WHILE           reduce using rule 120 (epsilon -> .)
-    FOR             reduce using rule 120 (epsilon -> .)
-    OPENPAR         reduce using rule 120 (epsilon -> .)
-    PLUS            reduce using rule 120 (epsilon -> .)
-    MINUS           reduce using rule 120 (epsilon -> .)
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-    CLOSECURLY      reduce using rule 120 (epsilon -> .)
-    CLOSEPAR        reduce using rule 120 (epsilon -> .)
     SEMICOLON       reduce using rule 120 (epsilon -> .)
+    CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    equal1                         shift and go to state 140
-    epsilon                        shift and go to state 143
+    equal1                         shift and go to state 141
+    epsilon                        shift and go to state 144
 
 state 81
 
@@ -2229,11 +2079,11 @@ state 82
     (39) parameters1 -> . epsilon
     (120) epsilon -> .
 
-    COMMA           shift and go to state 145
+    COMMA           shift and go to state 146
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    parameters1                    shift and go to state 144
-    epsilon                        shift and go to state 146
+    parameters1                    shift and go to state 145
+    epsilon                        shift and go to state 147
 
 state 83
 
@@ -2246,7 +2096,7 @@ state 84
 
     (33) funciones5 -> vars . OPENCURLY funciones6
 
-    OPENCURLY       shift and go to state 147
+    OPENCURLY       shift and go to state 148
 
 
 state 85
@@ -2262,7 +2112,7 @@ state 85
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -2271,9 +2121,9 @@ state 85
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -2289,14 +2139,14 @@ state 85
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 150
+    CLOSECURLY      shift and go to state 151
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -2306,8 +2156,8 @@ state 85
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    funciones6                     shift and go to state 148
-    estatutos                      shift and go to state 149
+    funciones6                     shift and go to state 149
+    estatutos                      shift and go to state 150
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -2316,10 +2166,10 @@ state 85
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -2337,7 +2187,7 @@ state 86
     SEMICOLON       shift and go to state 34
     COMMA           shift and go to state 35
 
-    vars4                          shift and go to state 151
+    vars4                          shift and go to state 152
 
 state 87
 
@@ -2352,23 +2202,9 @@ state 87
     NE              reduce using rule 98 (exp -> termino exp1 .)
     AND             reduce using rule 98 (exp -> termino exp1 .)
     OR              reduce using rule 98 (exp -> termino exp1 .)
-    ID              reduce using rule 98 (exp -> termino exp1 .)
-    RETURN          reduce using rule 98 (exp -> termino exp1 .)
-    READ            reduce using rule 98 (exp -> termino exp1 .)
-    WRITE           reduce using rule 98 (exp -> termino exp1 .)
-    IF              reduce using rule 98 (exp -> termino exp1 .)
-    WHILE           reduce using rule 98 (exp -> termino exp1 .)
-    FOR             reduce using rule 98 (exp -> termino exp1 .)
-    OPENPAR         reduce using rule 98 (exp -> termino exp1 .)
-    PLUS            reduce using rule 98 (exp -> termino exp1 .)
-    MINUS           reduce using rule 98 (exp -> termino exp1 .)
-    INT             reduce using rule 98 (exp -> termino exp1 .)
-    FLOAT           reduce using rule 98 (exp -> termino exp1 .)
-    CHAR            reduce using rule 98 (exp -> termino exp1 .)
-    CLOSECURLY      reduce using rule 98 (exp -> termino exp1 .)
+    SEMICOLON       reduce using rule 98 (exp -> termino exp1 .)
     CLOSEPAR        reduce using rule 98 (exp -> termino exp1 .)
     COMMA           reduce using rule 98 (exp -> termino exp1 .)
-    SEMICOLON       reduce using rule 98 (exp -> termino exp1 .)
     TO              reduce using rule 98 (exp -> termino exp1 .)
     DO              reduce using rule 98 (exp -> termino exp1 .)
 
@@ -2399,7 +2235,7 @@ state 88
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 152
+    exp                            shift and go to state 153
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -2432,7 +2268,7 @@ state 89
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 153
+    exp                            shift and go to state 154
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -2452,23 +2288,9 @@ state 90
     NE              reduce using rule 101 (exp1 -> epsilon .)
     AND             reduce using rule 101 (exp1 -> epsilon .)
     OR              reduce using rule 101 (exp1 -> epsilon .)
-    ID              reduce using rule 101 (exp1 -> epsilon .)
-    RETURN          reduce using rule 101 (exp1 -> epsilon .)
-    READ            reduce using rule 101 (exp1 -> epsilon .)
-    WRITE           reduce using rule 101 (exp1 -> epsilon .)
-    IF              reduce using rule 101 (exp1 -> epsilon .)
-    WHILE           reduce using rule 101 (exp1 -> epsilon .)
-    FOR             reduce using rule 101 (exp1 -> epsilon .)
-    OPENPAR         reduce using rule 101 (exp1 -> epsilon .)
-    PLUS            reduce using rule 101 (exp1 -> epsilon .)
-    MINUS           reduce using rule 101 (exp1 -> epsilon .)
-    INT             reduce using rule 101 (exp1 -> epsilon .)
-    FLOAT           reduce using rule 101 (exp1 -> epsilon .)
-    CHAR            reduce using rule 101 (exp1 -> epsilon .)
-    CLOSECURLY      reduce using rule 101 (exp1 -> epsilon .)
+    SEMICOLON       reduce using rule 101 (exp1 -> epsilon .)
     CLOSEPAR        reduce using rule 101 (exp1 -> epsilon .)
     COMMA           reduce using rule 101 (exp1 -> epsilon .)
-    SEMICOLON       reduce using rule 101 (exp1 -> epsilon .)
     TO              reduce using rule 101 (exp1 -> epsilon .)
     DO              reduce using rule 101 (exp1 -> epsilon .)
 
@@ -2488,21 +2310,9 @@ state 91
     NE              reduce using rule 102 (termino -> factor termino1 .)
     AND             reduce using rule 102 (termino -> factor termino1 .)
     OR              reduce using rule 102 (termino -> factor termino1 .)
-    ID              reduce using rule 102 (termino -> factor termino1 .)
-    RETURN          reduce using rule 102 (termino -> factor termino1 .)
-    READ            reduce using rule 102 (termino -> factor termino1 .)
-    WRITE           reduce using rule 102 (termino -> factor termino1 .)
-    IF              reduce using rule 102 (termino -> factor termino1 .)
-    WHILE           reduce using rule 102 (termino -> factor termino1 .)
-    FOR             reduce using rule 102 (termino -> factor termino1 .)
-    OPENPAR         reduce using rule 102 (termino -> factor termino1 .)
-    INT             reduce using rule 102 (termino -> factor termino1 .)
-    FLOAT           reduce using rule 102 (termino -> factor termino1 .)
-    CHAR            reduce using rule 102 (termino -> factor termino1 .)
-    CLOSECURLY      reduce using rule 102 (termino -> factor termino1 .)
+    SEMICOLON       reduce using rule 102 (termino -> factor termino1 .)
     CLOSEPAR        reduce using rule 102 (termino -> factor termino1 .)
     COMMA           reduce using rule 102 (termino -> factor termino1 .)
-    SEMICOLON       reduce using rule 102 (termino -> factor termino1 .)
     TO              reduce using rule 102 (termino -> factor termino1 .)
     DO              reduce using rule 102 (termino -> factor termino1 .)
 
@@ -2532,7 +2342,7 @@ state 92
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    termino                        shift and go to state 154
+    termino                        shift and go to state 155
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
@@ -2563,7 +2373,7 @@ state 93
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    termino                        shift and go to state 155
+    termino                        shift and go to state 156
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
@@ -2594,7 +2404,7 @@ state 94
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    termino                        shift and go to state 156
+    termino                        shift and go to state 157
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
@@ -2615,21 +2425,9 @@ state 95
     NE              reduce using rule 106 (termino1 -> epsilon .)
     AND             reduce using rule 106 (termino1 -> epsilon .)
     OR              reduce using rule 106 (termino1 -> epsilon .)
-    ID              reduce using rule 106 (termino1 -> epsilon .)
-    RETURN          reduce using rule 106 (termino1 -> epsilon .)
-    READ            reduce using rule 106 (termino1 -> epsilon .)
-    WRITE           reduce using rule 106 (termino1 -> epsilon .)
-    IF              reduce using rule 106 (termino1 -> epsilon .)
-    WHILE           reduce using rule 106 (termino1 -> epsilon .)
-    FOR             reduce using rule 106 (termino1 -> epsilon .)
-    OPENPAR         reduce using rule 106 (termino1 -> epsilon .)
-    INT             reduce using rule 106 (termino1 -> epsilon .)
-    FLOAT           reduce using rule 106 (termino1 -> epsilon .)
-    CHAR            reduce using rule 106 (termino1 -> epsilon .)
-    CLOSECURLY      reduce using rule 106 (termino1 -> epsilon .)
+    SEMICOLON       reduce using rule 106 (termino1 -> epsilon .)
     CLOSEPAR        reduce using rule 106 (termino1 -> epsilon .)
     COMMA           reduce using rule 106 (termino1 -> epsilon .)
-    SEMICOLON       reduce using rule 106 (termino1 -> epsilon .)
     TO              reduce using rule 106 (termino1 -> epsilon .)
     DO              reduce using rule 106 (termino1 -> epsilon .)
 
@@ -2652,21 +2450,9 @@ state 96
     NE              reduce using rule 107 (factor -> ID factor1 .)
     AND             reduce using rule 107 (factor -> ID factor1 .)
     OR              reduce using rule 107 (factor -> ID factor1 .)
-    ID              reduce using rule 107 (factor -> ID factor1 .)
-    RETURN          reduce using rule 107 (factor -> ID factor1 .)
-    READ            reduce using rule 107 (factor -> ID factor1 .)
-    WRITE           reduce using rule 107 (factor -> ID factor1 .)
-    IF              reduce using rule 107 (factor -> ID factor1 .)
-    WHILE           reduce using rule 107 (factor -> ID factor1 .)
-    FOR             reduce using rule 107 (factor -> ID factor1 .)
-    OPENPAR         reduce using rule 107 (factor -> ID factor1 .)
-    INT             reduce using rule 107 (factor -> ID factor1 .)
-    FLOAT           reduce using rule 107 (factor -> ID factor1 .)
-    CHAR            reduce using rule 107 (factor -> ID factor1 .)
-    CLOSECURLY      reduce using rule 107 (factor -> ID factor1 .)
+    SEMICOLON       reduce using rule 107 (factor -> ID factor1 .)
     CLOSEPAR        reduce using rule 107 (factor -> ID factor1 .)
     COMMA           reduce using rule 107 (factor -> ID factor1 .)
-    SEMICOLON       reduce using rule 107 (factor -> ID factor1 .)
     TO              reduce using rule 107 (factor -> ID factor1 .)
     DO              reduce using rule 107 (factor -> ID factor1 .)
 
@@ -2698,8 +2484,8 @@ state 97
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    funcion1                       shift and go to state 157
-    exp                            shift and go to state 158
+    funcion1                       shift and go to state 158
+    exp                            shift and go to state 159
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -2732,7 +2518,7 @@ state 98
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 159
+    exp                            shift and go to state 160
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -2758,20 +2544,8 @@ state 99
     AND             reduce using rule 112 (factor1 -> epsilon .)
     OR              reduce using rule 112 (factor1 -> epsilon .)
     CLOSEPAR        reduce using rule 112 (factor1 -> epsilon .)
-    ID              reduce using rule 112 (factor1 -> epsilon .)
-    RETURN          reduce using rule 112 (factor1 -> epsilon .)
-    READ            reduce using rule 112 (factor1 -> epsilon .)
-    WRITE           reduce using rule 112 (factor1 -> epsilon .)
-    IF              reduce using rule 112 (factor1 -> epsilon .)
-    WHILE           reduce using rule 112 (factor1 -> epsilon .)
-    FOR             reduce using rule 112 (factor1 -> epsilon .)
-    OPENPAR         reduce using rule 112 (factor1 -> epsilon .)
-    INT             reduce using rule 112 (factor1 -> epsilon .)
-    FLOAT           reduce using rule 112 (factor1 -> epsilon .)
-    CHAR            reduce using rule 112 (factor1 -> epsilon .)
-    CLOSECURLY      reduce using rule 112 (factor1 -> epsilon .)
-    COMMA           reduce using rule 112 (factor1 -> epsilon .)
     SEMICOLON       reduce using rule 112 (factor1 -> epsilon .)
+    COMMA           reduce using rule 112 (factor1 -> epsilon .)
     TO              reduce using rule 112 (factor1 -> epsilon .)
     DO              reduce using rule 112 (factor1 -> epsilon .)
 
@@ -2780,7 +2554,7 @@ state 100
 
     (108) factor -> OPENPAR expresion . CLOSEPAR
 
-    CLOSEPAR        shift and go to state 160
+    CLOSEPAR        shift and go to state 161
 
 
 state 101
@@ -2801,21 +2575,9 @@ state 101
     NE              reduce using rule 110 (factor -> factor2 varcte .)
     AND             reduce using rule 110 (factor -> factor2 varcte .)
     OR              reduce using rule 110 (factor -> factor2 varcte .)
-    ID              reduce using rule 110 (factor -> factor2 varcte .)
-    RETURN          reduce using rule 110 (factor -> factor2 varcte .)
-    READ            reduce using rule 110 (factor -> factor2 varcte .)
-    WRITE           reduce using rule 110 (factor -> factor2 varcte .)
-    IF              reduce using rule 110 (factor -> factor2 varcte .)
-    WHILE           reduce using rule 110 (factor -> factor2 varcte .)
-    FOR             reduce using rule 110 (factor -> factor2 varcte .)
-    OPENPAR         reduce using rule 110 (factor -> factor2 varcte .)
-    INT             reduce using rule 110 (factor -> factor2 varcte .)
-    FLOAT           reduce using rule 110 (factor -> factor2 varcte .)
-    CHAR            reduce using rule 110 (factor -> factor2 varcte .)
-    CLOSECURLY      reduce using rule 110 (factor -> factor2 varcte .)
+    SEMICOLON       reduce using rule 110 (factor -> factor2 varcte .)
     CLOSEPAR        reduce using rule 110 (factor -> factor2 varcte .)
     COMMA           reduce using rule 110 (factor -> factor2 varcte .)
-    SEMICOLON       reduce using rule 110 (factor -> factor2 varcte .)
     TO              reduce using rule 110 (factor -> factor2 varcte .)
     DO              reduce using rule 110 (factor -> factor2 varcte .)
 
@@ -2838,21 +2600,9 @@ state 102
     NE              reduce using rule 116 (varcte -> ID .)
     AND             reduce using rule 116 (varcte -> ID .)
     OR              reduce using rule 116 (varcte -> ID .)
-    ID              reduce using rule 116 (varcte -> ID .)
-    RETURN          reduce using rule 116 (varcte -> ID .)
-    READ            reduce using rule 116 (varcte -> ID .)
-    WRITE           reduce using rule 116 (varcte -> ID .)
-    IF              reduce using rule 116 (varcte -> ID .)
-    WHILE           reduce using rule 116 (varcte -> ID .)
-    FOR             reduce using rule 116 (varcte -> ID .)
-    OPENPAR         reduce using rule 116 (varcte -> ID .)
-    INT             reduce using rule 116 (varcte -> ID .)
-    FLOAT           reduce using rule 116 (varcte -> ID .)
-    CHAR            reduce using rule 116 (varcte -> ID .)
-    CLOSECURLY      reduce using rule 116 (varcte -> ID .)
+    SEMICOLON       reduce using rule 116 (varcte -> ID .)
     CLOSEPAR        reduce using rule 116 (varcte -> ID .)
     COMMA           reduce using rule 116 (varcte -> ID .)
-    SEMICOLON       reduce using rule 116 (varcte -> ID .)
     TO              reduce using rule 116 (varcte -> ID .)
     DO              reduce using rule 116 (varcte -> ID .)
 
@@ -2875,21 +2625,9 @@ state 103
     NE              reduce using rule 117 (varcte -> INT .)
     AND             reduce using rule 117 (varcte -> INT .)
     OR              reduce using rule 117 (varcte -> INT .)
-    ID              reduce using rule 117 (varcte -> INT .)
-    RETURN          reduce using rule 117 (varcte -> INT .)
-    READ            reduce using rule 117 (varcte -> INT .)
-    WRITE           reduce using rule 117 (varcte -> INT .)
-    IF              reduce using rule 117 (varcte -> INT .)
-    WHILE           reduce using rule 117 (varcte -> INT .)
-    FOR             reduce using rule 117 (varcte -> INT .)
-    OPENPAR         reduce using rule 117 (varcte -> INT .)
-    INT             reduce using rule 117 (varcte -> INT .)
-    FLOAT           reduce using rule 117 (varcte -> INT .)
-    CHAR            reduce using rule 117 (varcte -> INT .)
-    CLOSECURLY      reduce using rule 117 (varcte -> INT .)
+    SEMICOLON       reduce using rule 117 (varcte -> INT .)
     CLOSEPAR        reduce using rule 117 (varcte -> INT .)
     COMMA           reduce using rule 117 (varcte -> INT .)
-    SEMICOLON       reduce using rule 117 (varcte -> INT .)
     TO              reduce using rule 117 (varcte -> INT .)
     DO              reduce using rule 117 (varcte -> INT .)
 
@@ -2912,21 +2650,9 @@ state 104
     NE              reduce using rule 118 (varcte -> FLOAT .)
     AND             reduce using rule 118 (varcte -> FLOAT .)
     OR              reduce using rule 118 (varcte -> FLOAT .)
-    ID              reduce using rule 118 (varcte -> FLOAT .)
-    RETURN          reduce using rule 118 (varcte -> FLOAT .)
-    READ            reduce using rule 118 (varcte -> FLOAT .)
-    WRITE           reduce using rule 118 (varcte -> FLOAT .)
-    IF              reduce using rule 118 (varcte -> FLOAT .)
-    WHILE           reduce using rule 118 (varcte -> FLOAT .)
-    FOR             reduce using rule 118 (varcte -> FLOAT .)
-    OPENPAR         reduce using rule 118 (varcte -> FLOAT .)
-    INT             reduce using rule 118 (varcte -> FLOAT .)
-    FLOAT           reduce using rule 118 (varcte -> FLOAT .)
-    CHAR            reduce using rule 118 (varcte -> FLOAT .)
-    CLOSECURLY      reduce using rule 118 (varcte -> FLOAT .)
+    SEMICOLON       reduce using rule 118 (varcte -> FLOAT .)
     CLOSEPAR        reduce using rule 118 (varcte -> FLOAT .)
     COMMA           reduce using rule 118 (varcte -> FLOAT .)
-    SEMICOLON       reduce using rule 118 (varcte -> FLOAT .)
     TO              reduce using rule 118 (varcte -> FLOAT .)
     DO              reduce using rule 118 (varcte -> FLOAT .)
 
@@ -2949,21 +2675,9 @@ state 105
     NE              reduce using rule 119 (varcte -> CHAR .)
     AND             reduce using rule 119 (varcte -> CHAR .)
     OR              reduce using rule 119 (varcte -> CHAR .)
-    ID              reduce using rule 119 (varcte -> CHAR .)
-    RETURN          reduce using rule 119 (varcte -> CHAR .)
-    READ            reduce using rule 119 (varcte -> CHAR .)
-    WRITE           reduce using rule 119 (varcte -> CHAR .)
-    IF              reduce using rule 119 (varcte -> CHAR .)
-    WHILE           reduce using rule 119 (varcte -> CHAR .)
-    FOR             reduce using rule 119 (varcte -> CHAR .)
-    OPENPAR         reduce using rule 119 (varcte -> CHAR .)
-    INT             reduce using rule 119 (varcte -> CHAR .)
-    FLOAT           reduce using rule 119 (varcte -> CHAR .)
-    CHAR            reduce using rule 119 (varcte -> CHAR .)
-    CLOSECURLY      reduce using rule 119 (varcte -> CHAR .)
+    SEMICOLON       reduce using rule 119 (varcte -> CHAR .)
     CLOSEPAR        reduce using rule 119 (varcte -> CHAR .)
     COMMA           reduce using rule 119 (varcte -> CHAR .)
-    SEMICOLON       reduce using rule 119 (varcte -> CHAR .)
     TO              reduce using rule 119 (varcte -> CHAR .)
     DO              reduce using rule 119 (varcte -> CHAR .)
 
@@ -2972,7 +2686,7 @@ state 106
 
     (51) asignacion -> ID asignacion1 . IS expresion SEMICOLON
 
-    IS              shift and go to state 161
+    IS              shift and go to state 162
 
 
 state 107
@@ -3002,7 +2716,7 @@ state 107
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 162
+    exp                            shift and go to state 163
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -3028,18 +2742,7 @@ state 108
     NE              reduce using rule 112 (factor1 -> epsilon .)
     AND             reduce using rule 112 (factor1 -> epsilon .)
     OR              reduce using rule 112 (factor1 -> epsilon .)
-    ID              reduce using rule 112 (factor1 -> epsilon .)
-    RETURN          reduce using rule 112 (factor1 -> epsilon .)
-    READ            reduce using rule 112 (factor1 -> epsilon .)
-    WRITE           reduce using rule 112 (factor1 -> epsilon .)
-    IF              reduce using rule 112 (factor1 -> epsilon .)
-    WHILE           reduce using rule 112 (factor1 -> epsilon .)
-    FOR             reduce using rule 112 (factor1 -> epsilon .)
-    OPENPAR         reduce using rule 112 (factor1 -> epsilon .)
-    INT             reduce using rule 112 (factor1 -> epsilon .)
-    FLOAT           reduce using rule 112 (factor1 -> epsilon .)
-    CHAR            reduce using rule 112 (factor1 -> epsilon .)
-    CLOSECURLY      reduce using rule 112 (factor1 -> epsilon .)
+    SEMICOLON       reduce using rule 112 (factor1 -> epsilon .)
 
 
 state 109
@@ -3261,25 +2964,45 @@ state 119
 
 state 120
 
-    (48) estatutos -> expresion estatutos1 .
+    (48) estatutos -> est_exp estatutos1 .
 
-    CLOSECURLY      reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    ID              reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    RETURN          reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    READ            reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    WRITE           reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    IF              reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    WHILE           reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    FOR             reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    OPENPAR         reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    PLUS            reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    MINUS           reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    INT             reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    FLOAT           reduce using rule 48 (estatutos -> expresion estatutos1 .)
-    CHAR            reduce using rule 48 (estatutos -> expresion estatutos1 .)
+    CLOSECURLY      reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    ID              reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    RETURN          reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    READ            reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    WRITE           reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    IF              reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    WHILE           reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    FOR             reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    OPENPAR         reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    PLUS            reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    MINUS           reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    INT             reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    FLOAT           reduce using rule 48 (estatutos -> est_exp estatutos1 .)
+    CHAR            reduce using rule 48 (estatutos -> est_exp estatutos1 .)
 
 
 state 121
+
+    (81) est_exp -> expresion SEMICOLON .
+
+    ID              reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    RETURN          reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    READ            reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    WRITE           reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    IF              reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    WHILE           reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    FOR             reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    OPENPAR         reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    PLUS            reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    MINUS           reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    INT             reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    FLOAT           reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    CHAR            reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+    CLOSECURLY      reduce using rule 81 (est_exp -> expresion SEMICOLON .)
+
+
+state 122
 
     (54) llamada -> funcion SEMICOLON .
 
@@ -3299,7 +3022,7 @@ state 121
     CLOSECURLY      reduce using rule 54 (llamada -> funcion SEMICOLON .)
 
 
-state 122
+state 123
 
     (59) retorno -> RETURN OPENPAR . exp CLOSEPAR SEMICOLON
     (98) exp -> . termino exp1
@@ -3325,14 +3048,14 @@ state 122
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 163
+    exp                            shift and go to state 164
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 123
+state 124
 
     (92) compare -> exp compare1 .
 
@@ -3340,25 +3063,11 @@ state 123
     NE              reduce using rule 92 (compare -> exp compare1 .)
     AND             reduce using rule 92 (compare -> exp compare1 .)
     OR              reduce using rule 92 (compare -> exp compare1 .)
-    ID              reduce using rule 92 (compare -> exp compare1 .)
-    RETURN          reduce using rule 92 (compare -> exp compare1 .)
-    READ            reduce using rule 92 (compare -> exp compare1 .)
-    WRITE           reduce using rule 92 (compare -> exp compare1 .)
-    IF              reduce using rule 92 (compare -> exp compare1 .)
-    WHILE           reduce using rule 92 (compare -> exp compare1 .)
-    FOR             reduce using rule 92 (compare -> exp compare1 .)
-    OPENPAR         reduce using rule 92 (compare -> exp compare1 .)
-    PLUS            reduce using rule 92 (compare -> exp compare1 .)
-    MINUS           reduce using rule 92 (compare -> exp compare1 .)
-    INT             reduce using rule 92 (compare -> exp compare1 .)
-    FLOAT           reduce using rule 92 (compare -> exp compare1 .)
-    CHAR            reduce using rule 92 (compare -> exp compare1 .)
-    CLOSECURLY      reduce using rule 92 (compare -> exp compare1 .)
-    CLOSEPAR        reduce using rule 92 (compare -> exp compare1 .)
     SEMICOLON       reduce using rule 92 (compare -> exp compare1 .)
+    CLOSEPAR        reduce using rule 92 (compare -> exp compare1 .)
 
 
-state 124
+state 125
 
     (93) compare1 -> LT . compare
     (92) compare -> . exp compare1
@@ -3385,15 +3094,15 @@ state 124
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    compare                        shift and go to state 164
-    exp                            shift and go to state 71
+    compare                        shift and go to state 165
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 125
+state 126
 
     (94) compare1 -> LE . compare
     (92) compare -> . exp compare1
@@ -3420,15 +3129,15 @@ state 125
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    compare                        shift and go to state 165
-    exp                            shift and go to state 71
+    compare                        shift and go to state 166
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 126
+state 127
 
     (95) compare1 -> GT . compare
     (92) compare -> . exp compare1
@@ -3455,15 +3164,15 @@ state 126
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    compare                        shift and go to state 166
-    exp                            shift and go to state 71
+    compare                        shift and go to state 167
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 127
+state 128
 
     (96) compare1 -> GE . compare
     (92) compare -> . exp compare1
@@ -3490,15 +3199,15 @@ state 127
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    compare                        shift and go to state 167
-    exp                            shift and go to state 71
+    compare                        shift and go to state 168
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 128
+state 129
 
     (97) compare1 -> epsilon .
 
@@ -3506,94 +3215,36 @@ state 128
     NE              reduce using rule 97 (compare1 -> epsilon .)
     AND             reduce using rule 97 (compare1 -> epsilon .)
     OR              reduce using rule 97 (compare1 -> epsilon .)
-    ID              reduce using rule 97 (compare1 -> epsilon .)
-    RETURN          reduce using rule 97 (compare1 -> epsilon .)
-    READ            reduce using rule 97 (compare1 -> epsilon .)
-    WRITE           reduce using rule 97 (compare1 -> epsilon .)
-    IF              reduce using rule 97 (compare1 -> epsilon .)
-    WHILE           reduce using rule 97 (compare1 -> epsilon .)
-    FOR             reduce using rule 97 (compare1 -> epsilon .)
-    OPENPAR         reduce using rule 97 (compare1 -> epsilon .)
-    PLUS            reduce using rule 97 (compare1 -> epsilon .)
-    MINUS           reduce using rule 97 (compare1 -> epsilon .)
-    INT             reduce using rule 97 (compare1 -> epsilon .)
-    FLOAT           reduce using rule 97 (compare1 -> epsilon .)
-    CHAR            reduce using rule 97 (compare1 -> epsilon .)
-    CLOSECURLY      reduce using rule 97 (compare1 -> epsilon .)
-    CLOSEPAR        reduce using rule 97 (compare1 -> epsilon .)
     SEMICOLON       reduce using rule 97 (compare1 -> epsilon .)
+    CLOSEPAR        reduce using rule 97 (compare1 -> epsilon .)
 
 
-state 129
+state 130
 
     (60) lectura -> READ OPENPAR . lista_ids CLOSEPAR SEMICOLON
     (17) lista_ids -> . ID lista_ids1
 
-    ID              shift and go to state 169
+    ID              shift and go to state 170
 
-    lista_ids                      shift and go to state 168
+    lista_ids                      shift and go to state 169
 
-state 130
+state 131
 
     (61) escritura -> WRITE OPENPAR . escritura1 CLOSEPAR SEMICOLON
     (62) escritura1 -> . STRING escritura2
     (63) escritura1 -> . lista_ids escritura2
     (17) lista_ids -> . ID lista_ids1
 
-    STRING          shift and go to state 171
-    ID              shift and go to state 169
+    STRING          shift and go to state 172
+    ID              shift and go to state 170
 
-    escritura1                     shift and go to state 170
-    lista_ids                      shift and go to state 172
-
-state 131
-
-    (66) condicion -> IF OPENPAR . expresion CLOSEPAR THEN OPENCURLY condicion1
-    (81) expresion -> . or
-    (82) or -> . and or1
-    (85) and -> . equal and1
-    (88) equal -> . compare equal1
-    (92) compare -> . exp compare1
-    (98) exp -> . termino exp1
-    (102) termino -> . factor termino1
-    (107) factor -> . ID factor1
-    (108) factor -> . OPENPAR expresion CLOSEPAR
-    (109) factor -> . funcion
-    (110) factor -> . factor2 varcte
-    (55) funcion -> . ID OPENPAR funcion1
-    (113) factor2 -> . PLUS
-    (114) factor2 -> . MINUS
-    (115) factor2 -> . epsilon
-    (120) epsilon -> .
-
-  ! shift/reduce conflict for ID resolved as shift
-    ID              shift and go to state 45
-    OPENPAR         shift and go to state 46
-    PLUS            shift and go to state 49
-    MINUS           shift and go to state 50
-    INT             reduce using rule 120 (epsilon -> .)
-    FLOAT           reduce using rule 120 (epsilon -> .)
-    CHAR            reduce using rule 120 (epsilon -> .)
-
-  ! ID              [ reduce using rule 120 (epsilon -> .) ]
-
-    expresion                      shift and go to state 173
-    or                             shift and go to state 77
-    and                            shift and go to state 78
-    equal                          shift and go to state 79
-    compare                        shift and go to state 80
-    exp                            shift and go to state 71
-    termino                        shift and go to state 43
-    factor                         shift and go to state 44
-    funcion                        shift and go to state 47
-    factor2                        shift and go to state 48
-    epsilon                        shift and go to state 51
+    escritura1                     shift and go to state 171
+    lista_ids                      shift and go to state 173
 
 state 132
 
-    (73) while -> WHILE OPENPAR . expresion CLOSEPAR DO OPENCURLY while1
-    (81) expresion -> . or
-    (82) or -> . and or1
+    (66) condicion -> IF OPENPAR . expresion CLOSEPAR THEN OPENCURLY condicion1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -3621,11 +3272,10 @@ state 132
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
     expresion                      shift and go to state 174
-    or                             shift and go to state 77
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
@@ -3634,43 +3284,8 @@ state 132
 
 state 133
 
-    (76) for -> FOR ID . for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (77) for1 -> . OPENBOX exp CLOSEBOX
-    (78) for1 -> . epsilon
-    (120) epsilon -> .
-
-    OPENBOX         shift and go to state 176
-    IS              reduce using rule 120 (epsilon -> .)
-
-    for1                           shift and go to state 175
-    epsilon                        shift and go to state 177
-
-state 134
-
-    (82) or -> and or1 .
-
-    ID              reduce using rule 82 (or -> and or1 .)
-    RETURN          reduce using rule 82 (or -> and or1 .)
-    READ            reduce using rule 82 (or -> and or1 .)
-    WRITE           reduce using rule 82 (or -> and or1 .)
-    IF              reduce using rule 82 (or -> and or1 .)
-    WHILE           reduce using rule 82 (or -> and or1 .)
-    FOR             reduce using rule 82 (or -> and or1 .)
-    OPENPAR         reduce using rule 82 (or -> and or1 .)
-    PLUS            reduce using rule 82 (or -> and or1 .)
-    MINUS           reduce using rule 82 (or -> and or1 .)
-    INT             reduce using rule 82 (or -> and or1 .)
-    FLOAT           reduce using rule 82 (or -> and or1 .)
-    CHAR            reduce using rule 82 (or -> and or1 .)
-    CLOSECURLY      reduce using rule 82 (or -> and or1 .)
-    CLOSEPAR        reduce using rule 82 (or -> and or1 .)
-    SEMICOLON       reduce using rule 82 (or -> and or1 .)
-
-
-state 135
-
-    (83) or1 -> OR . or
-    (82) or -> . and or1
+    (73) while -> WHILE OPENPAR . expresion CLOSEPAR DO OPENCURLY while1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -3697,63 +3312,97 @@ state 135
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    or                             shift and go to state 178
+    expresion                      shift and go to state 175
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
+state 134
+
+    (76) for -> FOR ID . for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
+    (77) for1 -> . OPENBOX exp CLOSEBOX
+    (78) for1 -> . epsilon
+    (120) epsilon -> .
+
+    OPENBOX         shift and go to state 177
+    IS              reduce using rule 120 (epsilon -> .)
+
+    for1                           shift and go to state 176
+    epsilon                        shift and go to state 178
+
+state 135
+
+    (82) expresion -> and expresion1 .
+
+    SEMICOLON       reduce using rule 82 (expresion -> and expresion1 .)
+    CLOSEPAR        reduce using rule 82 (expresion -> and expresion1 .)
+
+
 state 136
 
-    (84) or1 -> epsilon .
+    (83) expresion1 -> OR . expresion
+    (82) expresion -> . and expresion1
+    (85) and -> . equal and1
+    (88) equal -> . compare equal1
+    (92) compare -> . exp compare1
+    (98) exp -> . termino exp1
+    (102) termino -> . factor termino1
+    (107) factor -> . ID factor1
+    (108) factor -> . OPENPAR expresion CLOSEPAR
+    (109) factor -> . funcion
+    (110) factor -> . factor2 varcte
+    (55) funcion -> . ID OPENPAR funcion1
+    (113) factor2 -> . PLUS
+    (114) factor2 -> . MINUS
+    (115) factor2 -> . epsilon
+    (120) epsilon -> .
 
-    ID              reduce using rule 84 (or1 -> epsilon .)
-    RETURN          reduce using rule 84 (or1 -> epsilon .)
-    READ            reduce using rule 84 (or1 -> epsilon .)
-    WRITE           reduce using rule 84 (or1 -> epsilon .)
-    IF              reduce using rule 84 (or1 -> epsilon .)
-    WHILE           reduce using rule 84 (or1 -> epsilon .)
-    FOR             reduce using rule 84 (or1 -> epsilon .)
-    OPENPAR         reduce using rule 84 (or1 -> epsilon .)
-    PLUS            reduce using rule 84 (or1 -> epsilon .)
-    MINUS           reduce using rule 84 (or1 -> epsilon .)
-    INT             reduce using rule 84 (or1 -> epsilon .)
-    FLOAT           reduce using rule 84 (or1 -> epsilon .)
-    CHAR            reduce using rule 84 (or1 -> epsilon .)
-    CLOSECURLY      reduce using rule 84 (or1 -> epsilon .)
-    CLOSEPAR        reduce using rule 84 (or1 -> epsilon .)
-    SEMICOLON       reduce using rule 84 (or1 -> epsilon .)
+  ! shift/reduce conflict for ID resolved as shift
+    ID              shift and go to state 45
+    OPENPAR         shift and go to state 46
+    PLUS            shift and go to state 49
+    MINUS           shift and go to state 50
+    INT             reduce using rule 120 (epsilon -> .)
+    FLOAT           reduce using rule 120 (epsilon -> .)
+    CHAR            reduce using rule 120 (epsilon -> .)
 
+  ! ID              [ reduce using rule 120 (epsilon -> .) ]
+
+    expresion                      shift and go to state 179
+    and                            shift and go to state 78
+    equal                          shift and go to state 79
+    compare                        shift and go to state 80
+    exp                            shift and go to state 72
+    termino                        shift and go to state 43
+    factor                         shift and go to state 44
+    funcion                        shift and go to state 47
+    factor2                        shift and go to state 48
+    epsilon                        shift and go to state 51
 
 state 137
+
+    (84) expresion1 -> epsilon .
+
+    SEMICOLON       reduce using rule 84 (expresion1 -> epsilon .)
+    CLOSEPAR        reduce using rule 84 (expresion1 -> epsilon .)
+
+
+state 138
 
     (85) and -> equal and1 .
 
     OR              reduce using rule 85 (and -> equal and1 .)
-    ID              reduce using rule 85 (and -> equal and1 .)
-    RETURN          reduce using rule 85 (and -> equal and1 .)
-    READ            reduce using rule 85 (and -> equal and1 .)
-    WRITE           reduce using rule 85 (and -> equal and1 .)
-    IF              reduce using rule 85 (and -> equal and1 .)
-    WHILE           reduce using rule 85 (and -> equal and1 .)
-    FOR             reduce using rule 85 (and -> equal and1 .)
-    OPENPAR         reduce using rule 85 (and -> equal and1 .)
-    PLUS            reduce using rule 85 (and -> equal and1 .)
-    MINUS           reduce using rule 85 (and -> equal and1 .)
-    INT             reduce using rule 85 (and -> equal and1 .)
-    FLOAT           reduce using rule 85 (and -> equal and1 .)
-    CHAR            reduce using rule 85 (and -> equal and1 .)
-    CLOSECURLY      reduce using rule 85 (and -> equal and1 .)
-    CLOSEPAR        reduce using rule 85 (and -> equal and1 .)
     SEMICOLON       reduce using rule 85 (and -> equal and1 .)
+    CLOSEPAR        reduce using rule 85 (and -> equal and1 .)
 
 
-state 138
+state 139
 
     (86) and1 -> AND . and
     (85) and -> . equal and1
@@ -3782,64 +3431,36 @@ state 138
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    and                            shift and go to state 179
+    and                            shift and go to state 180
     equal                          shift and go to state 79
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 139
+state 140
 
     (87) and1 -> epsilon .
 
     OR              reduce using rule 87 (and1 -> epsilon .)
-    ID              reduce using rule 87 (and1 -> epsilon .)
-    RETURN          reduce using rule 87 (and1 -> epsilon .)
-    READ            reduce using rule 87 (and1 -> epsilon .)
-    WRITE           reduce using rule 87 (and1 -> epsilon .)
-    IF              reduce using rule 87 (and1 -> epsilon .)
-    WHILE           reduce using rule 87 (and1 -> epsilon .)
-    FOR             reduce using rule 87 (and1 -> epsilon .)
-    OPENPAR         reduce using rule 87 (and1 -> epsilon .)
-    PLUS            reduce using rule 87 (and1 -> epsilon .)
-    MINUS           reduce using rule 87 (and1 -> epsilon .)
-    INT             reduce using rule 87 (and1 -> epsilon .)
-    FLOAT           reduce using rule 87 (and1 -> epsilon .)
-    CHAR            reduce using rule 87 (and1 -> epsilon .)
-    CLOSECURLY      reduce using rule 87 (and1 -> epsilon .)
-    CLOSEPAR        reduce using rule 87 (and1 -> epsilon .)
     SEMICOLON       reduce using rule 87 (and1 -> epsilon .)
+    CLOSEPAR        reduce using rule 87 (and1 -> epsilon .)
 
 
-state 140
+state 141
 
     (88) equal -> compare equal1 .
 
     AND             reduce using rule 88 (equal -> compare equal1 .)
     OR              reduce using rule 88 (equal -> compare equal1 .)
-    ID              reduce using rule 88 (equal -> compare equal1 .)
-    RETURN          reduce using rule 88 (equal -> compare equal1 .)
-    READ            reduce using rule 88 (equal -> compare equal1 .)
-    WRITE           reduce using rule 88 (equal -> compare equal1 .)
-    IF              reduce using rule 88 (equal -> compare equal1 .)
-    WHILE           reduce using rule 88 (equal -> compare equal1 .)
-    FOR             reduce using rule 88 (equal -> compare equal1 .)
-    OPENPAR         reduce using rule 88 (equal -> compare equal1 .)
-    PLUS            reduce using rule 88 (equal -> compare equal1 .)
-    MINUS           reduce using rule 88 (equal -> compare equal1 .)
-    INT             reduce using rule 88 (equal -> compare equal1 .)
-    FLOAT           reduce using rule 88 (equal -> compare equal1 .)
-    CHAR            reduce using rule 88 (equal -> compare equal1 .)
-    CLOSECURLY      reduce using rule 88 (equal -> compare equal1 .)
-    CLOSEPAR        reduce using rule 88 (equal -> compare equal1 .)
     SEMICOLON       reduce using rule 88 (equal -> compare equal1 .)
+    CLOSEPAR        reduce using rule 88 (equal -> compare equal1 .)
 
 
-state 141
+state 142
 
     (89) equal1 -> EQ . equal
     (88) equal -> . compare equal1
@@ -3867,16 +3488,16 @@ state 141
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    equal                          shift and go to state 180
+    equal                          shift and go to state 181
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 142
+state 143
 
     (90) equal1 -> NE . equal
     (88) equal -> . compare equal1
@@ -3904,47 +3525,33 @@ state 142
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    equal                          shift and go to state 181
+    equal                          shift and go to state 182
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 143
+state 144
 
     (91) equal1 -> epsilon .
 
     AND             reduce using rule 91 (equal1 -> epsilon .)
     OR              reduce using rule 91 (equal1 -> epsilon .)
-    ID              reduce using rule 91 (equal1 -> epsilon .)
-    RETURN          reduce using rule 91 (equal1 -> epsilon .)
-    READ            reduce using rule 91 (equal1 -> epsilon .)
-    WRITE           reduce using rule 91 (equal1 -> epsilon .)
-    IF              reduce using rule 91 (equal1 -> epsilon .)
-    WHILE           reduce using rule 91 (equal1 -> epsilon .)
-    FOR             reduce using rule 91 (equal1 -> epsilon .)
-    OPENPAR         reduce using rule 91 (equal1 -> epsilon .)
-    PLUS            reduce using rule 91 (equal1 -> epsilon .)
-    MINUS           reduce using rule 91 (equal1 -> epsilon .)
-    INT             reduce using rule 91 (equal1 -> epsilon .)
-    FLOAT           reduce using rule 91 (equal1 -> epsilon .)
-    CHAR            reduce using rule 91 (equal1 -> epsilon .)
-    CLOSECURLY      reduce using rule 91 (equal1 -> epsilon .)
-    CLOSEPAR        reduce using rule 91 (equal1 -> epsilon .)
     SEMICOLON       reduce using rule 91 (equal1 -> epsilon .)
+    CLOSEPAR        reduce using rule 91 (equal1 -> epsilon .)
 
 
-state 144
+state 145
 
     (37) parameters -> tipo ID parameters1 .
 
     CLOSEPAR        reduce using rule 37 (parameters -> tipo ID parameters1 .)
 
 
-state 145
+state 146
 
     (38) parameters1 -> COMMA . parameters
     (37) parameters -> . tipo ID parameters1
@@ -3956,17 +3563,17 @@ state 145
     TYPEINT         shift and go to state 16
     TYPECHAR        shift and go to state 17
 
-    parameters                     shift and go to state 182
+    parameters                     shift and go to state 183
     tipo                           shift and go to state 40
 
-state 146
+state 147
 
     (39) parameters1 -> epsilon .
 
     CLOSEPAR        reduce using rule 39 (parameters1 -> epsilon .)
 
 
-state 147
+state 148
 
     (33) funciones5 -> vars OPENCURLY . funciones6
     (35) funciones6 -> . estatutos funciones6
@@ -3979,7 +3586,7 @@ state 147
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -3988,9 +3595,9 @@ state 147
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -4006,14 +3613,14 @@ state 147
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 150
+    CLOSECURLY      shift and go to state 151
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -4023,8 +3630,8 @@ state 147
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    funciones6                     shift and go to state 183
-    estatutos                      shift and go to state 149
+    funciones6                     shift and go to state 184
+    estatutos                      shift and go to state 150
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -4033,10 +3640,10 @@ state 147
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -4045,14 +3652,14 @@ state 147
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 148
+state 149
 
     (34) funciones5 -> OPENCURLY funciones6 .
 
     MAIN            reduce using rule 34 (funciones5 -> OPENCURLY funciones6 .)
 
 
-state 149
+state 150
 
     (35) funciones6 -> estatutos . funciones6
     (35) funciones6 -> . estatutos funciones6
@@ -4065,7 +3672,7 @@ state 149
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -4074,9 +3681,9 @@ state 149
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -4092,14 +3699,14 @@ state 149
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 150
+    CLOSECURLY      shift and go to state 151
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -4109,8 +3716,8 @@ state 149
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    estatutos                      shift and go to state 149
-    funciones6                     shift and go to state 184
+    estatutos                      shift and go to state 150
+    funciones6                     shift and go to state 185
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -4119,10 +3726,10 @@ state 149
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -4131,7 +3738,7 @@ state 149
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 150
+state 151
 
     (36) funciones6 -> CLOSECURLY . funciones
     (25) funciones -> . FUNCTION funciones1
@@ -4141,10 +3748,10 @@ state 150
     FUNCTION        shift and go to state 12
     MAIN            reduce using rule 120 (epsilon -> .)
 
-    funciones                      shift and go to state 185
-    epsilon                        shift and go to state 186
+    funciones                      shift and go to state 186
+    epsilon                        shift and go to state 187
 
-state 151
+state 152
 
     (11) vars3 -> OPENBOX exp CLOSEBOX vars4 .
 
@@ -4153,7 +3760,7 @@ state 151
     OPENCURLY       reduce using rule 11 (vars3 -> OPENBOX exp CLOSEBOX vars4 .)
 
 
-state 152
+state 153
 
     (99) exp1 -> PLUS exp .
 
@@ -4166,28 +3773,14 @@ state 152
     NE              reduce using rule 99 (exp1 -> PLUS exp .)
     AND             reduce using rule 99 (exp1 -> PLUS exp .)
     OR              reduce using rule 99 (exp1 -> PLUS exp .)
-    ID              reduce using rule 99 (exp1 -> PLUS exp .)
-    RETURN          reduce using rule 99 (exp1 -> PLUS exp .)
-    READ            reduce using rule 99 (exp1 -> PLUS exp .)
-    WRITE           reduce using rule 99 (exp1 -> PLUS exp .)
-    IF              reduce using rule 99 (exp1 -> PLUS exp .)
-    WHILE           reduce using rule 99 (exp1 -> PLUS exp .)
-    FOR             reduce using rule 99 (exp1 -> PLUS exp .)
-    OPENPAR         reduce using rule 99 (exp1 -> PLUS exp .)
-    PLUS            reduce using rule 99 (exp1 -> PLUS exp .)
-    MINUS           reduce using rule 99 (exp1 -> PLUS exp .)
-    INT             reduce using rule 99 (exp1 -> PLUS exp .)
-    FLOAT           reduce using rule 99 (exp1 -> PLUS exp .)
-    CHAR            reduce using rule 99 (exp1 -> PLUS exp .)
-    CLOSECURLY      reduce using rule 99 (exp1 -> PLUS exp .)
+    SEMICOLON       reduce using rule 99 (exp1 -> PLUS exp .)
     CLOSEPAR        reduce using rule 99 (exp1 -> PLUS exp .)
     COMMA           reduce using rule 99 (exp1 -> PLUS exp .)
-    SEMICOLON       reduce using rule 99 (exp1 -> PLUS exp .)
     TO              reduce using rule 99 (exp1 -> PLUS exp .)
     DO              reduce using rule 99 (exp1 -> PLUS exp .)
 
 
-state 153
+state 154
 
     (100) exp1 -> MINUS exp .
 
@@ -4200,28 +3793,14 @@ state 153
     NE              reduce using rule 100 (exp1 -> MINUS exp .)
     AND             reduce using rule 100 (exp1 -> MINUS exp .)
     OR              reduce using rule 100 (exp1 -> MINUS exp .)
-    ID              reduce using rule 100 (exp1 -> MINUS exp .)
-    RETURN          reduce using rule 100 (exp1 -> MINUS exp .)
-    READ            reduce using rule 100 (exp1 -> MINUS exp .)
-    WRITE           reduce using rule 100 (exp1 -> MINUS exp .)
-    IF              reduce using rule 100 (exp1 -> MINUS exp .)
-    WHILE           reduce using rule 100 (exp1 -> MINUS exp .)
-    FOR             reduce using rule 100 (exp1 -> MINUS exp .)
-    OPENPAR         reduce using rule 100 (exp1 -> MINUS exp .)
-    PLUS            reduce using rule 100 (exp1 -> MINUS exp .)
-    MINUS           reduce using rule 100 (exp1 -> MINUS exp .)
-    INT             reduce using rule 100 (exp1 -> MINUS exp .)
-    FLOAT           reduce using rule 100 (exp1 -> MINUS exp .)
-    CHAR            reduce using rule 100 (exp1 -> MINUS exp .)
-    CLOSECURLY      reduce using rule 100 (exp1 -> MINUS exp .)
+    SEMICOLON       reduce using rule 100 (exp1 -> MINUS exp .)
     CLOSEPAR        reduce using rule 100 (exp1 -> MINUS exp .)
     COMMA           reduce using rule 100 (exp1 -> MINUS exp .)
-    SEMICOLON       reduce using rule 100 (exp1 -> MINUS exp .)
     TO              reduce using rule 100 (exp1 -> MINUS exp .)
     DO              reduce using rule 100 (exp1 -> MINUS exp .)
 
 
-state 154
+state 155
 
     (103) termino1 -> MULTIPLY termino .
 
@@ -4236,26 +3815,14 @@ state 154
     NE              reduce using rule 103 (termino1 -> MULTIPLY termino .)
     AND             reduce using rule 103 (termino1 -> MULTIPLY termino .)
     OR              reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    ID              reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    RETURN          reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    READ            reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    WRITE           reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    IF              reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    WHILE           reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    FOR             reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    OPENPAR         reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    INT             reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    FLOAT           reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    CHAR            reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    CLOSECURLY      reduce using rule 103 (termino1 -> MULTIPLY termino .)
+    SEMICOLON       reduce using rule 103 (termino1 -> MULTIPLY termino .)
     CLOSEPAR        reduce using rule 103 (termino1 -> MULTIPLY termino .)
     COMMA           reduce using rule 103 (termino1 -> MULTIPLY termino .)
-    SEMICOLON       reduce using rule 103 (termino1 -> MULTIPLY termino .)
     TO              reduce using rule 103 (termino1 -> MULTIPLY termino .)
     DO              reduce using rule 103 (termino1 -> MULTIPLY termino .)
 
 
-state 155
+state 156
 
     (104) termino1 -> DIVIDE termino .
 
@@ -4270,26 +3837,14 @@ state 155
     NE              reduce using rule 104 (termino1 -> DIVIDE termino .)
     AND             reduce using rule 104 (termino1 -> DIVIDE termino .)
     OR              reduce using rule 104 (termino1 -> DIVIDE termino .)
-    ID              reduce using rule 104 (termino1 -> DIVIDE termino .)
-    RETURN          reduce using rule 104 (termino1 -> DIVIDE termino .)
-    READ            reduce using rule 104 (termino1 -> DIVIDE termino .)
-    WRITE           reduce using rule 104 (termino1 -> DIVIDE termino .)
-    IF              reduce using rule 104 (termino1 -> DIVIDE termino .)
-    WHILE           reduce using rule 104 (termino1 -> DIVIDE termino .)
-    FOR             reduce using rule 104 (termino1 -> DIVIDE termino .)
-    OPENPAR         reduce using rule 104 (termino1 -> DIVIDE termino .)
-    INT             reduce using rule 104 (termino1 -> DIVIDE termino .)
-    FLOAT           reduce using rule 104 (termino1 -> DIVIDE termino .)
-    CHAR            reduce using rule 104 (termino1 -> DIVIDE termino .)
-    CLOSECURLY      reduce using rule 104 (termino1 -> DIVIDE termino .)
+    SEMICOLON       reduce using rule 104 (termino1 -> DIVIDE termino .)
     CLOSEPAR        reduce using rule 104 (termino1 -> DIVIDE termino .)
     COMMA           reduce using rule 104 (termino1 -> DIVIDE termino .)
-    SEMICOLON       reduce using rule 104 (termino1 -> DIVIDE termino .)
     TO              reduce using rule 104 (termino1 -> DIVIDE termino .)
     DO              reduce using rule 104 (termino1 -> DIVIDE termino .)
 
 
-state 156
+state 157
 
     (105) termino1 -> MODULO termino .
 
@@ -4304,26 +3859,14 @@ state 156
     NE              reduce using rule 105 (termino1 -> MODULO termino .)
     AND             reduce using rule 105 (termino1 -> MODULO termino .)
     OR              reduce using rule 105 (termino1 -> MODULO termino .)
-    ID              reduce using rule 105 (termino1 -> MODULO termino .)
-    RETURN          reduce using rule 105 (termino1 -> MODULO termino .)
-    READ            reduce using rule 105 (termino1 -> MODULO termino .)
-    WRITE           reduce using rule 105 (termino1 -> MODULO termino .)
-    IF              reduce using rule 105 (termino1 -> MODULO termino .)
-    WHILE           reduce using rule 105 (termino1 -> MODULO termino .)
-    FOR             reduce using rule 105 (termino1 -> MODULO termino .)
-    OPENPAR         reduce using rule 105 (termino1 -> MODULO termino .)
-    INT             reduce using rule 105 (termino1 -> MODULO termino .)
-    FLOAT           reduce using rule 105 (termino1 -> MODULO termino .)
-    CHAR            reduce using rule 105 (termino1 -> MODULO termino .)
-    CLOSECURLY      reduce using rule 105 (termino1 -> MODULO termino .)
+    SEMICOLON       reduce using rule 105 (termino1 -> MODULO termino .)
     CLOSEPAR        reduce using rule 105 (termino1 -> MODULO termino .)
     COMMA           reduce using rule 105 (termino1 -> MODULO termino .)
-    SEMICOLON       reduce using rule 105 (termino1 -> MODULO termino .)
     TO              reduce using rule 105 (termino1 -> MODULO termino .)
     DO              reduce using rule 105 (termino1 -> MODULO termino .)
 
 
-state 157
+state 158
 
     (55) funcion -> ID OPENPAR funcion1 .
 
@@ -4342,43 +3885,31 @@ state 157
     NE              reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
     AND             reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
     OR              reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    ID              reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    RETURN          reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    READ            reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    WRITE           reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    IF              reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    WHILE           reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    FOR             reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    OPENPAR         reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    INT             reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    FLOAT           reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    CHAR            reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
-    CLOSECURLY      reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
     CLOSEPAR        reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
     COMMA           reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
     TO              reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
     DO              reduce using rule 55 (funcion -> ID OPENPAR funcion1 .)
 
 
-state 158
+state 159
 
     (56) funcion1 -> exp . funcion2
     (57) funcion2 -> . COMMA funcion1
     (58) funcion2 -> . CLOSEPAR
 
-    COMMA           shift and go to state 188
-    CLOSEPAR        shift and go to state 189
+    COMMA           shift and go to state 189
+    CLOSEPAR        shift and go to state 190
 
-    funcion2                       shift and go to state 187
+    funcion2                       shift and go to state 188
 
-state 159
+state 160
 
     (111) factor1 -> OPENBOX exp . CLOSEBOX
 
-    CLOSEBOX        shift and go to state 190
+    CLOSEBOX        shift and go to state 191
 
 
-state 160
+state 161
 
     (108) factor -> OPENPAR expresion CLOSEPAR .
 
@@ -4396,30 +3927,17 @@ state 160
     NE              reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
     AND             reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
     OR              reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    ID              reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    RETURN          reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    READ            reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    WRITE           reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    IF              reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    WHILE           reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    FOR             reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    OPENPAR         reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    INT             reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    FLOAT           reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    CHAR            reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    CLOSECURLY      reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
+    SEMICOLON       reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
     CLOSEPAR        reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
     COMMA           reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
-    SEMICOLON       reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
     TO              reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
     DO              reduce using rule 108 (factor -> OPENPAR expresion CLOSEPAR .)
 
 
-state 161
+state 162
 
     (51) asignacion -> ID asignacion1 IS . expresion SEMICOLON
-    (81) expresion -> . or
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -4446,34 +3964,33 @@ state 161
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    expresion                      shift and go to state 191
-    or                             shift and go to state 77
+    expresion                      shift and go to state 192
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
-    exp                            shift and go to state 71
+    exp                            shift and go to state 72
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 162
+state 163
 
     (52) asignacion1 -> OPENBOX exp . CLOSEBOX
     (111) factor1 -> OPENBOX exp . CLOSEBOX
 
-    CLOSEBOX        shift and go to state 192
-
-
-state 163
-
-    (59) retorno -> RETURN OPENPAR exp . CLOSEPAR SEMICOLON
-
-    CLOSEPAR        shift and go to state 193
+    CLOSEBOX        shift and go to state 193
 
 
 state 164
+
+    (59) retorno -> RETURN OPENPAR exp . CLOSEPAR SEMICOLON
+
+    CLOSEPAR        shift and go to state 194
+
+
+state 165
 
     (93) compare1 -> LT compare .
 
@@ -4481,25 +3998,11 @@ state 164
     NE              reduce using rule 93 (compare1 -> LT compare .)
     AND             reduce using rule 93 (compare1 -> LT compare .)
     OR              reduce using rule 93 (compare1 -> LT compare .)
-    ID              reduce using rule 93 (compare1 -> LT compare .)
-    RETURN          reduce using rule 93 (compare1 -> LT compare .)
-    READ            reduce using rule 93 (compare1 -> LT compare .)
-    WRITE           reduce using rule 93 (compare1 -> LT compare .)
-    IF              reduce using rule 93 (compare1 -> LT compare .)
-    WHILE           reduce using rule 93 (compare1 -> LT compare .)
-    FOR             reduce using rule 93 (compare1 -> LT compare .)
-    OPENPAR         reduce using rule 93 (compare1 -> LT compare .)
-    PLUS            reduce using rule 93 (compare1 -> LT compare .)
-    MINUS           reduce using rule 93 (compare1 -> LT compare .)
-    INT             reduce using rule 93 (compare1 -> LT compare .)
-    FLOAT           reduce using rule 93 (compare1 -> LT compare .)
-    CHAR            reduce using rule 93 (compare1 -> LT compare .)
-    CLOSECURLY      reduce using rule 93 (compare1 -> LT compare .)
-    CLOSEPAR        reduce using rule 93 (compare1 -> LT compare .)
     SEMICOLON       reduce using rule 93 (compare1 -> LT compare .)
+    CLOSEPAR        reduce using rule 93 (compare1 -> LT compare .)
 
 
-state 165
+state 166
 
     (94) compare1 -> LE compare .
 
@@ -4507,25 +4010,11 @@ state 165
     NE              reduce using rule 94 (compare1 -> LE compare .)
     AND             reduce using rule 94 (compare1 -> LE compare .)
     OR              reduce using rule 94 (compare1 -> LE compare .)
-    ID              reduce using rule 94 (compare1 -> LE compare .)
-    RETURN          reduce using rule 94 (compare1 -> LE compare .)
-    READ            reduce using rule 94 (compare1 -> LE compare .)
-    WRITE           reduce using rule 94 (compare1 -> LE compare .)
-    IF              reduce using rule 94 (compare1 -> LE compare .)
-    WHILE           reduce using rule 94 (compare1 -> LE compare .)
-    FOR             reduce using rule 94 (compare1 -> LE compare .)
-    OPENPAR         reduce using rule 94 (compare1 -> LE compare .)
-    PLUS            reduce using rule 94 (compare1 -> LE compare .)
-    MINUS           reduce using rule 94 (compare1 -> LE compare .)
-    INT             reduce using rule 94 (compare1 -> LE compare .)
-    FLOAT           reduce using rule 94 (compare1 -> LE compare .)
-    CHAR            reduce using rule 94 (compare1 -> LE compare .)
-    CLOSECURLY      reduce using rule 94 (compare1 -> LE compare .)
-    CLOSEPAR        reduce using rule 94 (compare1 -> LE compare .)
     SEMICOLON       reduce using rule 94 (compare1 -> LE compare .)
+    CLOSEPAR        reduce using rule 94 (compare1 -> LE compare .)
 
 
-state 166
+state 167
 
     (95) compare1 -> GT compare .
 
@@ -4533,25 +4022,11 @@ state 166
     NE              reduce using rule 95 (compare1 -> GT compare .)
     AND             reduce using rule 95 (compare1 -> GT compare .)
     OR              reduce using rule 95 (compare1 -> GT compare .)
-    ID              reduce using rule 95 (compare1 -> GT compare .)
-    RETURN          reduce using rule 95 (compare1 -> GT compare .)
-    READ            reduce using rule 95 (compare1 -> GT compare .)
-    WRITE           reduce using rule 95 (compare1 -> GT compare .)
-    IF              reduce using rule 95 (compare1 -> GT compare .)
-    WHILE           reduce using rule 95 (compare1 -> GT compare .)
-    FOR             reduce using rule 95 (compare1 -> GT compare .)
-    OPENPAR         reduce using rule 95 (compare1 -> GT compare .)
-    PLUS            reduce using rule 95 (compare1 -> GT compare .)
-    MINUS           reduce using rule 95 (compare1 -> GT compare .)
-    INT             reduce using rule 95 (compare1 -> GT compare .)
-    FLOAT           reduce using rule 95 (compare1 -> GT compare .)
-    CHAR            reduce using rule 95 (compare1 -> GT compare .)
-    CLOSECURLY      reduce using rule 95 (compare1 -> GT compare .)
-    CLOSEPAR        reduce using rule 95 (compare1 -> GT compare .)
     SEMICOLON       reduce using rule 95 (compare1 -> GT compare .)
+    CLOSEPAR        reduce using rule 95 (compare1 -> GT compare .)
 
 
-state 167
+state 168
 
     (96) compare1 -> GE compare .
 
@@ -4559,32 +4034,18 @@ state 167
     NE              reduce using rule 96 (compare1 -> GE compare .)
     AND             reduce using rule 96 (compare1 -> GE compare .)
     OR              reduce using rule 96 (compare1 -> GE compare .)
-    ID              reduce using rule 96 (compare1 -> GE compare .)
-    RETURN          reduce using rule 96 (compare1 -> GE compare .)
-    READ            reduce using rule 96 (compare1 -> GE compare .)
-    WRITE           reduce using rule 96 (compare1 -> GE compare .)
-    IF              reduce using rule 96 (compare1 -> GE compare .)
-    WHILE           reduce using rule 96 (compare1 -> GE compare .)
-    FOR             reduce using rule 96 (compare1 -> GE compare .)
-    OPENPAR         reduce using rule 96 (compare1 -> GE compare .)
-    PLUS            reduce using rule 96 (compare1 -> GE compare .)
-    MINUS           reduce using rule 96 (compare1 -> GE compare .)
-    INT             reduce using rule 96 (compare1 -> GE compare .)
-    FLOAT           reduce using rule 96 (compare1 -> GE compare .)
-    CHAR            reduce using rule 96 (compare1 -> GE compare .)
-    CLOSECURLY      reduce using rule 96 (compare1 -> GE compare .)
-    CLOSEPAR        reduce using rule 96 (compare1 -> GE compare .)
     SEMICOLON       reduce using rule 96 (compare1 -> GE compare .)
-
-
-state 168
-
-    (60) lectura -> READ OPENPAR lista_ids . CLOSEPAR SEMICOLON
-
-    CLOSEPAR        shift and go to state 194
+    CLOSEPAR        reduce using rule 96 (compare1 -> GE compare .)
 
 
 state 169
+
+    (60) lectura -> READ OPENPAR lista_ids . CLOSEPAR SEMICOLON
+
+    CLOSEPAR        shift and go to state 195
+
+
+state 170
 
     (17) lista_ids -> ID . lista_ids1
     (18) lista_ids1 -> . lista_ids2
@@ -4594,71 +4055,71 @@ state 169
     (120) epsilon -> .
 
   ! shift/reduce conflict for COMMA resolved as shift
-    OPENBOX         shift and go to state 197
-    COMMA           shift and go to state 198
+    OPENBOX         shift and go to state 198
+    COMMA           shift and go to state 199
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
   ! COMMA           [ reduce using rule 120 (epsilon -> .) ]
 
-    lista_ids1                     shift and go to state 195
-    lista_ids2                     shift and go to state 196
-    epsilon                        shift and go to state 199
+    lista_ids1                     shift and go to state 196
+    lista_ids2                     shift and go to state 197
+    epsilon                        shift and go to state 200
 
-state 170
+state 171
 
     (61) escritura -> WRITE OPENPAR escritura1 . CLOSEPAR SEMICOLON
 
-    CLOSEPAR        shift and go to state 200
+    CLOSEPAR        shift and go to state 201
 
 
-state 171
+state 172
 
     (62) escritura1 -> STRING . escritura2
     (64) escritura2 -> . COMMA escritura1
     (65) escritura2 -> . epsilon
     (120) epsilon -> .
 
-    COMMA           shift and go to state 202
+    COMMA           shift and go to state 203
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    escritura2                     shift and go to state 201
-    epsilon                        shift and go to state 203
+    escritura2                     shift and go to state 202
+    epsilon                        shift and go to state 204
 
-state 172
+state 173
 
     (63) escritura1 -> lista_ids . escritura2
     (64) escritura2 -> . COMMA escritura1
     (65) escritura2 -> . epsilon
     (120) epsilon -> .
 
-    COMMA           shift and go to state 202
+    COMMA           shift and go to state 203
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
-    escritura2                     shift and go to state 204
-    epsilon                        shift and go to state 203
-
-state 173
-
-    (66) condicion -> IF OPENPAR expresion . CLOSEPAR THEN OPENCURLY condicion1
-
-    CLOSEPAR        shift and go to state 205
-
+    escritura2                     shift and go to state 205
+    epsilon                        shift and go to state 204
 
 state 174
 
-    (73) while -> WHILE OPENPAR expresion . CLOSEPAR DO OPENCURLY while1
+    (66) condicion -> IF OPENPAR expresion . CLOSEPAR THEN OPENCURLY condicion1
 
     CLOSEPAR        shift and go to state 206
 
 
 state 175
 
-    (76) for -> FOR ID for1 . IS exp TO exp DO OPENCURLY for2 CLOSECURLY
+    (73) while -> WHILE OPENPAR expresion . CLOSEPAR DO OPENCURLY while1
 
-    IS              shift and go to state 207
+    CLOSEPAR        shift and go to state 207
 
 
 state 176
+
+    (76) for -> FOR ID for1 . IS exp TO exp DO OPENCURLY for2 CLOSECURLY
+
+    IS              shift and go to state 208
+
+
+state 177
 
     (77) for1 -> OPENBOX . exp CLOSEBOX
     (98) exp -> . termino exp1
@@ -4684,149 +4145,93 @@ state 176
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 208
+    exp                            shift and go to state 209
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 177
+state 178
 
     (78) for1 -> epsilon .
 
     IS              reduce using rule 78 (for1 -> epsilon .)
 
 
-state 178
-
-    (83) or1 -> OR or .
-
-    ID              reduce using rule 83 (or1 -> OR or .)
-    RETURN          reduce using rule 83 (or1 -> OR or .)
-    READ            reduce using rule 83 (or1 -> OR or .)
-    WRITE           reduce using rule 83 (or1 -> OR or .)
-    IF              reduce using rule 83 (or1 -> OR or .)
-    WHILE           reduce using rule 83 (or1 -> OR or .)
-    FOR             reduce using rule 83 (or1 -> OR or .)
-    OPENPAR         reduce using rule 83 (or1 -> OR or .)
-    PLUS            reduce using rule 83 (or1 -> OR or .)
-    MINUS           reduce using rule 83 (or1 -> OR or .)
-    INT             reduce using rule 83 (or1 -> OR or .)
-    FLOAT           reduce using rule 83 (or1 -> OR or .)
-    CHAR            reduce using rule 83 (or1 -> OR or .)
-    CLOSECURLY      reduce using rule 83 (or1 -> OR or .)
-    CLOSEPAR        reduce using rule 83 (or1 -> OR or .)
-    SEMICOLON       reduce using rule 83 (or1 -> OR or .)
-
-
 state 179
+
+    (83) expresion1 -> OR expresion .
+
+    SEMICOLON       reduce using rule 83 (expresion1 -> OR expresion .)
+    CLOSEPAR        reduce using rule 83 (expresion1 -> OR expresion .)
+
+
+state 180
 
     (86) and1 -> AND and .
 
     OR              reduce using rule 86 (and1 -> AND and .)
-    ID              reduce using rule 86 (and1 -> AND and .)
-    RETURN          reduce using rule 86 (and1 -> AND and .)
-    READ            reduce using rule 86 (and1 -> AND and .)
-    WRITE           reduce using rule 86 (and1 -> AND and .)
-    IF              reduce using rule 86 (and1 -> AND and .)
-    WHILE           reduce using rule 86 (and1 -> AND and .)
-    FOR             reduce using rule 86 (and1 -> AND and .)
-    OPENPAR         reduce using rule 86 (and1 -> AND and .)
-    PLUS            reduce using rule 86 (and1 -> AND and .)
-    MINUS           reduce using rule 86 (and1 -> AND and .)
-    INT             reduce using rule 86 (and1 -> AND and .)
-    FLOAT           reduce using rule 86 (and1 -> AND and .)
-    CHAR            reduce using rule 86 (and1 -> AND and .)
-    CLOSECURLY      reduce using rule 86 (and1 -> AND and .)
-    CLOSEPAR        reduce using rule 86 (and1 -> AND and .)
     SEMICOLON       reduce using rule 86 (and1 -> AND and .)
+    CLOSEPAR        reduce using rule 86 (and1 -> AND and .)
 
 
-state 180
+state 181
 
     (89) equal1 -> EQ equal .
 
     AND             reduce using rule 89 (equal1 -> EQ equal .)
     OR              reduce using rule 89 (equal1 -> EQ equal .)
-    ID              reduce using rule 89 (equal1 -> EQ equal .)
-    RETURN          reduce using rule 89 (equal1 -> EQ equal .)
-    READ            reduce using rule 89 (equal1 -> EQ equal .)
-    WRITE           reduce using rule 89 (equal1 -> EQ equal .)
-    IF              reduce using rule 89 (equal1 -> EQ equal .)
-    WHILE           reduce using rule 89 (equal1 -> EQ equal .)
-    FOR             reduce using rule 89 (equal1 -> EQ equal .)
-    OPENPAR         reduce using rule 89 (equal1 -> EQ equal .)
-    PLUS            reduce using rule 89 (equal1 -> EQ equal .)
-    MINUS           reduce using rule 89 (equal1 -> EQ equal .)
-    INT             reduce using rule 89 (equal1 -> EQ equal .)
-    FLOAT           reduce using rule 89 (equal1 -> EQ equal .)
-    CHAR            reduce using rule 89 (equal1 -> EQ equal .)
-    CLOSECURLY      reduce using rule 89 (equal1 -> EQ equal .)
-    CLOSEPAR        reduce using rule 89 (equal1 -> EQ equal .)
     SEMICOLON       reduce using rule 89 (equal1 -> EQ equal .)
+    CLOSEPAR        reduce using rule 89 (equal1 -> EQ equal .)
 
 
-state 181
+state 182
 
     (90) equal1 -> NE equal .
 
     AND             reduce using rule 90 (equal1 -> NE equal .)
     OR              reduce using rule 90 (equal1 -> NE equal .)
-    ID              reduce using rule 90 (equal1 -> NE equal .)
-    RETURN          reduce using rule 90 (equal1 -> NE equal .)
-    READ            reduce using rule 90 (equal1 -> NE equal .)
-    WRITE           reduce using rule 90 (equal1 -> NE equal .)
-    IF              reduce using rule 90 (equal1 -> NE equal .)
-    WHILE           reduce using rule 90 (equal1 -> NE equal .)
-    FOR             reduce using rule 90 (equal1 -> NE equal .)
-    OPENPAR         reduce using rule 90 (equal1 -> NE equal .)
-    PLUS            reduce using rule 90 (equal1 -> NE equal .)
-    MINUS           reduce using rule 90 (equal1 -> NE equal .)
-    INT             reduce using rule 90 (equal1 -> NE equal .)
-    FLOAT           reduce using rule 90 (equal1 -> NE equal .)
-    CHAR            reduce using rule 90 (equal1 -> NE equal .)
-    CLOSECURLY      reduce using rule 90 (equal1 -> NE equal .)
-    CLOSEPAR        reduce using rule 90 (equal1 -> NE equal .)
     SEMICOLON       reduce using rule 90 (equal1 -> NE equal .)
+    CLOSEPAR        reduce using rule 90 (equal1 -> NE equal .)
 
 
-state 182
+state 183
 
     (38) parameters1 -> COMMA parameters .
 
     CLOSEPAR        reduce using rule 38 (parameters1 -> COMMA parameters .)
 
 
-state 183
+state 184
 
     (33) funciones5 -> vars OPENCURLY funciones6 .
 
     MAIN            reduce using rule 33 (funciones5 -> vars OPENCURLY funciones6 .)
 
 
-state 184
+state 185
 
     (35) funciones6 -> estatutos funciones6 .
 
     MAIN            reduce using rule 35 (funciones6 -> estatutos funciones6 .)
 
 
-state 185
+state 186
 
     (36) funciones6 -> CLOSECURLY funciones .
 
     MAIN            reduce using rule 36 (funciones6 -> CLOSECURLY funciones .)
 
 
-state 186
+state 187
 
     (26) funciones -> epsilon .
 
     MAIN            reduce using rule 26 (funciones -> epsilon .)
 
 
-state 187
+state 188
 
     (56) funcion1 -> exp funcion2 .
 
@@ -4845,25 +4250,13 @@ state 187
     NE              reduce using rule 56 (funcion1 -> exp funcion2 .)
     AND             reduce using rule 56 (funcion1 -> exp funcion2 .)
     OR              reduce using rule 56 (funcion1 -> exp funcion2 .)
-    ID              reduce using rule 56 (funcion1 -> exp funcion2 .)
-    RETURN          reduce using rule 56 (funcion1 -> exp funcion2 .)
-    READ            reduce using rule 56 (funcion1 -> exp funcion2 .)
-    WRITE           reduce using rule 56 (funcion1 -> exp funcion2 .)
-    IF              reduce using rule 56 (funcion1 -> exp funcion2 .)
-    WHILE           reduce using rule 56 (funcion1 -> exp funcion2 .)
-    FOR             reduce using rule 56 (funcion1 -> exp funcion2 .)
-    OPENPAR         reduce using rule 56 (funcion1 -> exp funcion2 .)
-    INT             reduce using rule 56 (funcion1 -> exp funcion2 .)
-    FLOAT           reduce using rule 56 (funcion1 -> exp funcion2 .)
-    CHAR            reduce using rule 56 (funcion1 -> exp funcion2 .)
-    CLOSECURLY      reduce using rule 56 (funcion1 -> exp funcion2 .)
     CLOSEPAR        reduce using rule 56 (funcion1 -> exp funcion2 .)
     COMMA           reduce using rule 56 (funcion1 -> exp funcion2 .)
     TO              reduce using rule 56 (funcion1 -> exp funcion2 .)
     DO              reduce using rule 56 (funcion1 -> exp funcion2 .)
 
 
-state 188
+state 189
 
     (57) funcion2 -> COMMA . funcion1
     (56) funcion1 -> . exp funcion2
@@ -4890,15 +4283,15 @@ state 188
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    funcion1                       shift and go to state 209
-    exp                            shift and go to state 158
+    funcion1                       shift and go to state 210
+    exp                            shift and go to state 159
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 189
+state 190
 
     (58) funcion2 -> CLOSEPAR .
 
@@ -4917,25 +4310,13 @@ state 189
     NE              reduce using rule 58 (funcion2 -> CLOSEPAR .)
     AND             reduce using rule 58 (funcion2 -> CLOSEPAR .)
     OR              reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    ID              reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    RETURN          reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    READ            reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    WRITE           reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    IF              reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    WHILE           reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    FOR             reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    OPENPAR         reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    INT             reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    FLOAT           reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    CHAR            reduce using rule 58 (funcion2 -> CLOSEPAR .)
-    CLOSECURLY      reduce using rule 58 (funcion2 -> CLOSEPAR .)
     CLOSEPAR        reduce using rule 58 (funcion2 -> CLOSEPAR .)
     COMMA           reduce using rule 58 (funcion2 -> CLOSEPAR .)
     TO              reduce using rule 58 (funcion2 -> CLOSEPAR .)
     DO              reduce using rule 58 (funcion2 -> CLOSEPAR .)
 
 
-state 190
+state 191
 
     (111) factor1 -> OPENBOX exp CLOSEBOX .
 
@@ -4954,32 +4335,20 @@ state 190
     AND             reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     OR              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     CLOSEPAR        reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    ID              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    RETURN          reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    READ            reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    WRITE           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    IF              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    WHILE           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    FOR             reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    OPENPAR         reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    INT             reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    FLOAT           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    CHAR            reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    CLOSECURLY      reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    COMMA           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     SEMICOLON       reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
+    COMMA           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     TO              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     DO              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
 
 
-state 191
+state 192
 
     (51) asignacion -> ID asignacion1 IS expresion . SEMICOLON
 
-    SEMICOLON       shift and go to state 210
+    SEMICOLON       shift and go to state 211
 
 
-state 192
+state 193
 
     (52) asignacion1 -> OPENBOX exp CLOSEBOX .
     (111) factor1 -> OPENBOX exp CLOSEBOX .
@@ -4998,35 +4367,24 @@ state 192
     NE              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     AND             reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
     OR              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    ID              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    RETURN          reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    READ            reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    WRITE           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    IF              reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    WHILE           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    FOR             reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    OPENPAR         reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    INT             reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    FLOAT           reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    CHAR            reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-    CLOSECURLY      reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
-
-
-state 193
-
-    (59) retorno -> RETURN OPENPAR exp CLOSEPAR . SEMICOLON
-
-    SEMICOLON       shift and go to state 211
+    SEMICOLON       reduce using rule 111 (factor1 -> OPENBOX exp CLOSEBOX .)
 
 
 state 194
 
-    (60) lectura -> READ OPENPAR lista_ids CLOSEPAR . SEMICOLON
+    (59) retorno -> RETURN OPENPAR exp CLOSEPAR . SEMICOLON
 
     SEMICOLON       shift and go to state 212
 
 
 state 195
+
+    (60) lectura -> READ OPENPAR lista_ids CLOSEPAR . SEMICOLON
+
+    SEMICOLON       shift and go to state 213
+
+
+state 196
 
     (17) lista_ids -> ID lista_ids1 .
 
@@ -5034,7 +4392,7 @@ state 195
     COMMA           reduce using rule 17 (lista_ids -> ID lista_ids1 .)
 
 
-state 196
+state 197
 
     (18) lista_ids1 -> lista_ids2 .
 
@@ -5042,7 +4400,7 @@ state 196
     COMMA           reduce using rule 18 (lista_ids1 -> lista_ids2 .)
 
 
-state 197
+state 198
 
     (19) lista_ids1 -> OPENBOX . exp CLOSEBOX lista_ids2
     (98) exp -> . termino exp1
@@ -5068,23 +4426,23 @@ state 197
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 213
+    exp                            shift and go to state 214
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 198
+state 199
 
     (20) lista_ids2 -> COMMA . lista_ids
     (17) lista_ids -> . ID lista_ids1
 
-    ID              shift and go to state 169
+    ID              shift and go to state 170
 
-    lista_ids                      shift and go to state 214
+    lista_ids                      shift and go to state 215
 
-state 199
+state 200
 
     (21) lista_ids2 -> epsilon .
 
@@ -5092,62 +4450,62 @@ state 199
     COMMA           reduce using rule 21 (lista_ids2 -> epsilon .)
 
 
-state 200
+state 201
 
     (61) escritura -> WRITE OPENPAR escritura1 CLOSEPAR . SEMICOLON
 
-    SEMICOLON       shift and go to state 215
+    SEMICOLON       shift and go to state 216
 
 
-state 201
+state 202
 
     (62) escritura1 -> STRING escritura2 .
 
     CLOSEPAR        reduce using rule 62 (escritura1 -> STRING escritura2 .)
 
 
-state 202
+state 203
 
     (64) escritura2 -> COMMA . escritura1
     (62) escritura1 -> . STRING escritura2
     (63) escritura1 -> . lista_ids escritura2
     (17) lista_ids -> . ID lista_ids1
 
-    STRING          shift and go to state 171
-    ID              shift and go to state 169
+    STRING          shift and go to state 172
+    ID              shift and go to state 170
 
-    escritura1                     shift and go to state 216
-    lista_ids                      shift and go to state 172
+    escritura1                     shift and go to state 217
+    lista_ids                      shift and go to state 173
 
-state 203
+state 204
 
     (65) escritura2 -> epsilon .
 
     CLOSEPAR        reduce using rule 65 (escritura2 -> epsilon .)
 
 
-state 204
+state 205
 
     (63) escritura1 -> lista_ids escritura2 .
 
     CLOSEPAR        reduce using rule 63 (escritura1 -> lista_ids escritura2 .)
 
 
-state 205
+state 206
 
     (66) condicion -> IF OPENPAR expresion CLOSEPAR . THEN OPENCURLY condicion1
 
-    THEN            shift and go to state 217
-
-
-state 206
-
-    (73) while -> WHILE OPENPAR expresion CLOSEPAR . DO OPENCURLY while1
-
-    DO              shift and go to state 218
+    THEN            shift and go to state 218
 
 
 state 207
+
+    (73) while -> WHILE OPENPAR expresion CLOSEPAR . DO OPENCURLY while1
+
+    DO              shift and go to state 219
+
+
+state 208
 
     (76) for -> FOR ID for1 IS . exp TO exp DO OPENCURLY for2 CLOSECURLY
     (98) exp -> . termino exp1
@@ -5173,21 +4531,21 @@ state 207
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 219
+    exp                            shift and go to state 220
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 208
+state 209
 
     (77) for1 -> OPENBOX exp . CLOSEBOX
 
-    CLOSEBOX        shift and go to state 220
+    CLOSEBOX        shift and go to state 221
 
 
-state 209
+state 210
 
     (57) funcion2 -> COMMA funcion1 .
 
@@ -5206,25 +4564,13 @@ state 209
     NE              reduce using rule 57 (funcion2 -> COMMA funcion1 .)
     AND             reduce using rule 57 (funcion2 -> COMMA funcion1 .)
     OR              reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    ID              reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    RETURN          reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    READ            reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    WRITE           reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    IF              reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    WHILE           reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    FOR             reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    OPENPAR         reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    INT             reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    FLOAT           reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    CHAR            reduce using rule 57 (funcion2 -> COMMA funcion1 .)
-    CLOSECURLY      reduce using rule 57 (funcion2 -> COMMA funcion1 .)
     CLOSEPAR        reduce using rule 57 (funcion2 -> COMMA funcion1 .)
     COMMA           reduce using rule 57 (funcion2 -> COMMA funcion1 .)
     TO              reduce using rule 57 (funcion2 -> COMMA funcion1 .)
     DO              reduce using rule 57 (funcion2 -> COMMA funcion1 .)
 
 
-state 210
+state 211
 
     (51) asignacion -> ID asignacion1 IS expresion SEMICOLON .
 
@@ -5244,7 +4590,7 @@ state 210
     CLOSECURLY      reduce using rule 51 (asignacion -> ID asignacion1 IS expresion SEMICOLON .)
 
 
-state 211
+state 212
 
     (59) retorno -> RETURN OPENPAR exp CLOSEPAR SEMICOLON .
 
@@ -5264,7 +4610,7 @@ state 211
     CLOSECURLY      reduce using rule 59 (retorno -> RETURN OPENPAR exp CLOSEPAR SEMICOLON .)
 
 
-state 212
+state 213
 
     (60) lectura -> READ OPENPAR lista_ids CLOSEPAR SEMICOLON .
 
@@ -5284,14 +4630,14 @@ state 212
     CLOSECURLY      reduce using rule 60 (lectura -> READ OPENPAR lista_ids CLOSEPAR SEMICOLON .)
 
 
-state 213
+state 214
 
     (19) lista_ids1 -> OPENBOX exp . CLOSEBOX lista_ids2
 
-    CLOSEBOX        shift and go to state 221
+    CLOSEBOX        shift and go to state 222
 
 
-state 214
+state 215
 
     (20) lista_ids2 -> COMMA lista_ids .
 
@@ -5299,7 +4645,7 @@ state 214
     COMMA           reduce using rule 20 (lista_ids2 -> COMMA lista_ids .)
 
 
-state 215
+state 216
 
     (61) escritura -> WRITE OPENPAR escritura1 CLOSEPAR SEMICOLON .
 
@@ -5319,42 +4665,42 @@ state 215
     CLOSECURLY      reduce using rule 61 (escritura -> WRITE OPENPAR escritura1 CLOSEPAR SEMICOLON .)
 
 
-state 216
+state 217
 
     (64) escritura2 -> COMMA escritura1 .
 
     CLOSEPAR        reduce using rule 64 (escritura2 -> COMMA escritura1 .)
 
 
-state 217
-
-    (66) condicion -> IF OPENPAR expresion CLOSEPAR THEN . OPENCURLY condicion1
-
-    OPENCURLY       shift and go to state 222
-
-
 state 218
 
-    (73) while -> WHILE OPENPAR expresion CLOSEPAR DO . OPENCURLY while1
+    (66) condicion -> IF OPENPAR expresion CLOSEPAR THEN . OPENCURLY condicion1
 
     OPENCURLY       shift and go to state 223
 
 
 state 219
 
-    (76) for -> FOR ID for1 IS exp . TO exp DO OPENCURLY for2 CLOSECURLY
+    (73) while -> WHILE OPENPAR expresion CLOSEPAR DO . OPENCURLY while1
 
-    TO              shift and go to state 224
+    OPENCURLY       shift and go to state 224
 
 
 state 220
+
+    (76) for -> FOR ID for1 IS exp . TO exp DO OPENCURLY for2 CLOSECURLY
+
+    TO              shift and go to state 225
+
+
+state 221
 
     (77) for1 -> OPENBOX exp CLOSEBOX .
 
     IS              reduce using rule 77 (for1 -> OPENBOX exp CLOSEBOX .)
 
 
-state 221
+state 222
 
     (19) lista_ids1 -> OPENBOX exp CLOSEBOX . lista_ids2
     (20) lista_ids2 -> . COMMA lista_ids
@@ -5362,15 +4708,15 @@ state 221
     (120) epsilon -> .
 
   ! shift/reduce conflict for COMMA resolved as shift
-    COMMA           shift and go to state 198
+    COMMA           shift and go to state 199
     CLOSEPAR        reduce using rule 120 (epsilon -> .)
 
   ! COMMA           [ reduce using rule 120 (epsilon -> .) ]
 
-    lista_ids2                     shift and go to state 225
-    epsilon                        shift and go to state 199
+    lista_ids2                     shift and go to state 226
+    epsilon                        shift and go to state 200
 
-state 222
+state 223
 
     (66) condicion -> IF OPENPAR expresion CLOSEPAR THEN OPENCURLY . condicion1
     (67) condicion1 -> . estatutos condicion1
@@ -5383,7 +4729,7 @@ state 222
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -5392,9 +4738,9 @@ state 222
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -5410,14 +4756,14 @@ state 222
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 228
+    CLOSECURLY      shift and go to state 229
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -5427,9 +4773,9 @@ state 222
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    expresion                      shift and go to state 68
-    condicion1                     shift and go to state 226
-    estatutos                      shift and go to state 227
+    expresion                      shift and go to state 69
+    condicion1                     shift and go to state 227
+    estatutos                      shift and go to state 228
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -5438,9 +4784,9 @@ state 222
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -5449,7 +4795,7 @@ state 222
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 223
+state 224
 
     (73) while -> WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY . while1
     (74) while1 -> . estatutos while1
@@ -5462,7 +4808,7 @@ state 223
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -5471,9 +4817,9 @@ state 223
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -5489,14 +4835,14 @@ state 223
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 231
+    CLOSECURLY      shift and go to state 232
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -5506,9 +4852,9 @@ state 223
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    expresion                      shift and go to state 68
-    while1                         shift and go to state 229
-    estatutos                      shift and go to state 230
+    expresion                      shift and go to state 69
+    while1                         shift and go to state 230
+    estatutos                      shift and go to state 231
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -5517,9 +4863,9 @@ state 223
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -5528,7 +4874,7 @@ state 223
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 224
+state 225
 
     (76) for -> FOR ID for1 IS exp TO . exp DO OPENCURLY for2 CLOSECURLY
     (98) exp -> . termino exp1
@@ -5554,14 +4900,14 @@ state 224
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 232
+    exp                            shift and go to state 233
     termino                        shift and go to state 43
     factor                         shift and go to state 44
     funcion                        shift and go to state 47
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 225
+state 226
 
     (19) lista_ids1 -> OPENBOX exp CLOSEBOX lista_ids2 .
 
@@ -5569,7 +4915,7 @@ state 225
     COMMA           reduce using rule 19 (lista_ids1 -> OPENBOX exp CLOSEBOX lista_ids2 .)
 
 
-state 226
+state 227
 
     (66) condicion -> IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1 .
 
@@ -5589,7 +4935,7 @@ state 226
     CLOSECURLY      reduce using rule 66 (condicion -> IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1 .)
 
 
-state 227
+state 228
 
     (67) condicion1 -> estatutos . condicion1
     (67) condicion1 -> . estatutos condicion1
@@ -5602,7 +4948,7 @@ state 227
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -5611,9 +4957,9 @@ state 227
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -5629,14 +4975,14 @@ state 227
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 228
+    CLOSECURLY      shift and go to state 229
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -5646,8 +4992,8 @@ state 227
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    estatutos                      shift and go to state 227
-    condicion1                     shift and go to state 233
+    estatutos                      shift and go to state 228
+    condicion1                     shift and go to state 234
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -5656,10 +5002,10 @@ state 227
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -5668,14 +5014,14 @@ state 227
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 228
+state 229
 
     (68) condicion1 -> CLOSECURLY . condicion2
     (69) condicion2 -> . ELSE OPENCURLY condicion3
     (70) condicion2 -> . epsilon
     (120) epsilon -> .
 
-    ELSE            shift and go to state 235
+    ELSE            shift and go to state 236
     ID              reduce using rule 120 (epsilon -> .)
     RETURN          reduce using rule 120 (epsilon -> .)
     READ            reduce using rule 120 (epsilon -> .)
@@ -5691,10 +5037,10 @@ state 228
     CHAR            reduce using rule 120 (epsilon -> .)
     CLOSECURLY      reduce using rule 120 (epsilon -> .)
 
-    condicion2                     shift and go to state 234
-    epsilon                        shift and go to state 236
+    condicion2                     shift and go to state 235
+    epsilon                        shift and go to state 237
 
-state 229
+state 230
 
     (73) while -> WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1 .
 
@@ -5714,7 +5060,7 @@ state 229
     CLOSECURLY      reduce using rule 73 (while -> WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1 .)
 
 
-state 230
+state 231
 
     (74) while1 -> estatutos . while1
     (74) while1 -> . estatutos while1
@@ -5727,7 +5073,7 @@ state 230
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -5736,9 +5082,9 @@ state 230
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -5754,14 +5100,14 @@ state 230
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 231
+    CLOSECURLY      shift and go to state 232
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -5771,8 +5117,8 @@ state 230
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    estatutos                      shift and go to state 230
-    while1                         shift and go to state 237
+    estatutos                      shift and go to state 231
+    while1                         shift and go to state 238
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -5781,10 +5127,10 @@ state 230
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -5793,7 +5139,7 @@ state 230
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 231
+state 232
 
     (75) while1 -> CLOSECURLY .
 
@@ -5813,14 +5159,14 @@ state 231
     CLOSECURLY      reduce using rule 75 (while1 -> CLOSECURLY .)
 
 
-state 232
+state 233
 
     (76) for -> FOR ID for1 IS exp TO exp . DO OPENCURLY for2 CLOSECURLY
 
-    DO              shift and go to state 238
+    DO              shift and go to state 239
 
 
-state 233
+state 234
 
     (67) condicion1 -> estatutos condicion1 .
 
@@ -5840,7 +5186,7 @@ state 233
     CLOSECURLY      reduce using rule 67 (condicion1 -> estatutos condicion1 .)
 
 
-state 234
+state 235
 
     (68) condicion1 -> CLOSECURLY condicion2 .
 
@@ -5860,14 +5206,14 @@ state 234
     CLOSECURLY      reduce using rule 68 (condicion1 -> CLOSECURLY condicion2 .)
 
 
-state 235
+state 236
 
     (69) condicion2 -> ELSE . OPENCURLY condicion3
 
-    OPENCURLY       shift and go to state 239
+    OPENCURLY       shift and go to state 240
 
 
-state 236
+state 237
 
     (70) condicion2 -> epsilon .
 
@@ -5887,7 +5233,7 @@ state 236
     CLOSECURLY      reduce using rule 70 (condicion2 -> epsilon .)
 
 
-state 237
+state 238
 
     (74) while1 -> estatutos while1 .
 
@@ -5907,14 +5253,14 @@ state 237
     CLOSECURLY      reduce using rule 74 (while1 -> estatutos while1 .)
 
 
-state 238
+state 239
 
     (76) for -> FOR ID for1 IS exp TO exp DO . OPENCURLY for2 CLOSECURLY
 
-    OPENCURLY       shift and go to state 240
+    OPENCURLY       shift and go to state 241
 
 
-state 239
+state 240
 
     (69) condicion2 -> ELSE OPENCURLY . condicion3
     (71) condicion3 -> . estatutos condicion3
@@ -5927,7 +5273,7 @@ state 239
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -5936,9 +5282,9 @@ state 239
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -5954,14 +5300,14 @@ state 239
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 243
+    CLOSECURLY      shift and go to state 244
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -5971,8 +5317,8 @@ state 239
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    condicion3                     shift and go to state 241
-    estatutos                      shift and go to state 242
+    condicion3                     shift and go to state 242
+    estatutos                      shift and go to state 243
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -5981,10 +5327,10 @@ state 239
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -5993,7 +5339,7 @@ state 239
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 240
+state 241
 
     (76) for -> FOR ID for1 IS exp TO exp DO OPENCURLY . for2 CLOSECURLY
     (79) for2 -> . estatutos for2
@@ -6006,7 +5352,7 @@ state 240
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -6016,9 +5362,9 @@ state 240
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -6038,22 +5384,22 @@ state 240
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    exp                            shift and go to state 71
-    for2                           shift and go to state 244
-    estatutos                      shift and go to state 245
-    epsilon                        shift and go to state 246
+    exp                            shift and go to state 72
+    for2                           shift and go to state 245
+    estatutos                      shift and go to state 246
+    epsilon                        shift and go to state 247
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -6062,9 +5408,9 @@ state 240
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -6072,7 +5418,7 @@ state 240
     factor                         shift and go to state 44
     factor2                        shift and go to state 48
 
-state 241
+state 242
 
     (69) condicion2 -> ELSE OPENCURLY condicion3 .
 
@@ -6092,7 +5438,7 @@ state 241
     CLOSECURLY      reduce using rule 69 (condicion2 -> ELSE OPENCURLY condicion3 .)
 
 
-state 242
+state 243
 
     (71) condicion3 -> estatutos . condicion3
     (71) condicion3 -> . estatutos condicion3
@@ -6105,7 +5451,7 @@ state 242
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
     (59) retorno -> . RETURN OPENPAR exp CLOSEPAR SEMICOLON
@@ -6114,9 +5460,9 @@ state 242
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -6132,14 +5478,14 @@ state 242
     (120) epsilon -> .
 
   ! shift/reduce conflict for ID resolved as shift
-    CLOSECURLY      shift and go to state 243
+    CLOSECURLY      shift and go to state 244
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -6149,8 +5495,8 @@ state 242
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    estatutos                      shift and go to state 242
-    condicion3                     shift and go to state 247
+    estatutos                      shift and go to state 243
+    condicion3                     shift and go to state 248
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -6159,10 +5505,10 @@ state 242
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -6171,7 +5517,7 @@ state 242
     factor2                        shift and go to state 48
     epsilon                        shift and go to state 51
 
-state 243
+state 244
 
     (72) condicion3 -> CLOSECURLY .
 
@@ -6191,14 +5537,14 @@ state 243
     CLOSECURLY      reduce using rule 72 (condicion3 -> CLOSECURLY .)
 
 
-state 244
+state 245
 
     (76) for -> FOR ID for1 IS exp TO exp DO OPENCURLY for2 . CLOSECURLY
 
-    CLOSECURLY      shift and go to state 248
+    CLOSECURLY      shift and go to state 249
 
 
-state 245
+state 246
 
     (79) for2 -> estatutos . for2
     (79) for2 -> . estatutos for2
@@ -6211,7 +5557,7 @@ state 245
     (45) estatutos -> . condicion estatutos1
     (46) estatutos -> . while estatutos1
     (47) estatutos -> . for estatutos1
-    (48) estatutos -> . expresion estatutos1
+    (48) estatutos -> . est_exp estatutos1
     (120) epsilon -> .
     (51) asignacion -> . ID asignacion1 IS expresion SEMICOLON
     (54) llamada -> . funcion SEMICOLON
@@ -6221,9 +5567,9 @@ state 245
     (66) condicion -> . IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
     (73) while -> . WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
     (76) for -> . FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
-    (81) expresion -> . or
+    (81) est_exp -> . expresion SEMICOLON
     (55) funcion -> . ID OPENPAR funcion1
-    (82) or -> . and or1
+    (82) expresion -> . and expresion1
     (85) and -> . equal and1
     (88) equal -> . compare equal1
     (92) compare -> . exp compare1
@@ -6243,21 +5589,21 @@ state 245
     FLOAT           reduce using rule 120 (epsilon -> .)
     CHAR            reduce using rule 120 (epsilon -> .)
     ID              shift and go to state 56
-    RETURN          shift and go to state 70
-    READ            shift and go to state 72
-    WRITE           shift and go to state 73
-    IF              shift and go to state 74
-    WHILE           shift and go to state 75
-    FOR             shift and go to state 76
+    RETURN          shift and go to state 71
+    READ            shift and go to state 73
+    WRITE           shift and go to state 74
+    IF              shift and go to state 75
+    WHILE           shift and go to state 76
+    FOR             shift and go to state 77
     OPENPAR         shift and go to state 46
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
 
   ! ID              [ reduce using rule 120 (epsilon -> .) ]
 
-    estatutos                      shift and go to state 245
-    for2                           shift and go to state 249
-    epsilon                        shift and go to state 246
+    estatutos                      shift and go to state 246
+    for2                           shift and go to state 250
+    epsilon                        shift and go to state 247
     asignacion                     shift and go to state 60
     llamada                        shift and go to state 61
     retorno                        shift and go to state 62
@@ -6266,10 +5612,10 @@ state 245
     condicion                      shift and go to state 65
     while                          shift and go to state 66
     for                            shift and go to state 67
-    expresion                      shift and go to state 68
-    funcion                        shift and go to state 69
-    exp                            shift and go to state 71
-    or                             shift and go to state 77
+    est_exp                        shift and go to state 68
+    expresion                      shift and go to state 69
+    funcion                        shift and go to state 70
+    exp                            shift and go to state 72
     and                            shift and go to state 78
     equal                          shift and go to state 79
     compare                        shift and go to state 80
@@ -6277,7 +5623,7 @@ state 245
     factor                         shift and go to state 44
     factor2                        shift and go to state 48
 
-state 246
+state 247
 
     (80) for2 -> epsilon .
     (115) factor2 -> epsilon .
@@ -6289,7 +5635,7 @@ state 246
     CHAR            reduce using rule 115 (factor2 -> epsilon .)
 
 
-state 247
+state 248
 
     (71) condicion3 -> estatutos condicion3 .
 
@@ -6309,7 +5655,7 @@ state 247
     CLOSECURLY      reduce using rule 71 (condicion3 -> estatutos condicion3 .)
 
 
-state 248
+state 249
 
     (76) for -> FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY .
 
@@ -6329,7 +5675,7 @@ state 248
     CLOSECURLY      reduce using rule 76 (for -> FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY .)
 
 
-state 249
+state 250
 
     (79) for2 -> estatutos for2 .
 
@@ -6340,11 +5686,7 @@ WARNING: Conflicts:
 WARNING: 
 WARNING: shift/reduce conflict for ID in state 32 resolved as shift
 WARNING: shift/reduce conflict for ID in state 36 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 43 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 43 resolved as shift
-WARNING: shift/reduce conflict for OPENPAR in state 45 resolved as shift
 WARNING: shift/reduce conflict for ID in state 46 resolved as shift
-WARNING: shift/reduce conflict for OPENPAR in state 56 resolved as shift
 WARNING: shift/reduce conflict for ID in state 60 resolved as shift
 WARNING: shift/reduce conflict for RETURN in state 60 resolved as shift
 WARNING: shift/reduce conflict for READ in state 60 resolved as shift
@@ -6435,6 +5777,7 @@ WARNING: shift/reduce conflict for FOR in state 68 resolved as shift
 WARNING: shift/reduce conflict for OPENPAR in state 68 resolved as shift
 WARNING: shift/reduce conflict for PLUS in state 68 resolved as shift
 WARNING: shift/reduce conflict for MINUS in state 68 resolved as shift
+WARNING: shift/reduce conflict for SEMICOLON in state 70 resolved as shift
 WARNING: shift/reduce conflict for ID in state 85 resolved as shift
 WARNING: shift/reduce conflict for ID in state 88 resolved as shift
 WARNING: shift/reduce conflict for ID in state 89 resolved as shift
@@ -6444,35 +5787,35 @@ WARNING: shift/reduce conflict for ID in state 94 resolved as shift
 WARNING: shift/reduce conflict for ID in state 97 resolved as shift
 WARNING: shift/reduce conflict for ID in state 98 resolved as shift
 WARNING: shift/reduce conflict for ID in state 107 resolved as shift
-WARNING: shift/reduce conflict for ID in state 122 resolved as shift
-WARNING: shift/reduce conflict for ID in state 124 resolved as shift
+WARNING: shift/reduce conflict for ID in state 123 resolved as shift
 WARNING: shift/reduce conflict for ID in state 125 resolved as shift
 WARNING: shift/reduce conflict for ID in state 126 resolved as shift
 WARNING: shift/reduce conflict for ID in state 127 resolved as shift
-WARNING: shift/reduce conflict for ID in state 131 resolved as shift
+WARNING: shift/reduce conflict for ID in state 128 resolved as shift
 WARNING: shift/reduce conflict for ID in state 132 resolved as shift
-WARNING: shift/reduce conflict for ID in state 135 resolved as shift
-WARNING: shift/reduce conflict for ID in state 138 resolved as shift
-WARNING: shift/reduce conflict for ID in state 141 resolved as shift
+WARNING: shift/reduce conflict for ID in state 133 resolved as shift
+WARNING: shift/reduce conflict for ID in state 136 resolved as shift
+WARNING: shift/reduce conflict for ID in state 139 resolved as shift
 WARNING: shift/reduce conflict for ID in state 142 resolved as shift
-WARNING: shift/reduce conflict for ID in state 147 resolved as shift
-WARNING: shift/reduce conflict for ID in state 149 resolved as shift
-WARNING: shift/reduce conflict for ID in state 161 resolved as shift
-WARNING: shift/reduce conflict for COMMA in state 169 resolved as shift
-WARNING: shift/reduce conflict for ID in state 176 resolved as shift
-WARNING: shift/reduce conflict for ID in state 188 resolved as shift
-WARNING: shift/reduce conflict for ID in state 197 resolved as shift
-WARNING: shift/reduce conflict for ID in state 207 resolved as shift
-WARNING: shift/reduce conflict for COMMA in state 221 resolved as shift
-WARNING: shift/reduce conflict for ID in state 222 resolved as shift
+WARNING: shift/reduce conflict for ID in state 143 resolved as shift
+WARNING: shift/reduce conflict for ID in state 148 resolved as shift
+WARNING: shift/reduce conflict for ID in state 150 resolved as shift
+WARNING: shift/reduce conflict for ID in state 162 resolved as shift
+WARNING: shift/reduce conflict for COMMA in state 170 resolved as shift
+WARNING: shift/reduce conflict for ID in state 177 resolved as shift
+WARNING: shift/reduce conflict for ID in state 189 resolved as shift
+WARNING: shift/reduce conflict for ID in state 198 resolved as shift
+WARNING: shift/reduce conflict for ID in state 208 resolved as shift
+WARNING: shift/reduce conflict for COMMA in state 222 resolved as shift
 WARNING: shift/reduce conflict for ID in state 223 resolved as shift
 WARNING: shift/reduce conflict for ID in state 224 resolved as shift
-WARNING: shift/reduce conflict for ID in state 227 resolved as shift
-WARNING: shift/reduce conflict for ID in state 230 resolved as shift
-WARNING: shift/reduce conflict for ID in state 239 resolved as shift
+WARNING: shift/reduce conflict for ID in state 225 resolved as shift
+WARNING: shift/reduce conflict for ID in state 228 resolved as shift
+WARNING: shift/reduce conflict for ID in state 231 resolved as shift
 WARNING: shift/reduce conflict for ID in state 240 resolved as shift
-WARNING: shift/reduce conflict for ID in state 242 resolved as shift
-WARNING: shift/reduce conflict for ID in state 245 resolved as shift
+WARNING: shift/reduce conflict for ID in state 241 resolved as shift
+WARNING: shift/reduce conflict for ID in state 243 resolved as shift
+WARNING: shift/reduce conflict for ID in state 246 resolved as shift
 WARNING: reduce/reduce conflict in state 11 resolved using rule (programa2 -> epsilon)
 WARNING: rejected rule (funciones -> epsilon) in state 11
 WARNING: reduce/reduce conflict in state 112 resolved using rule (estatutos1 -> epsilon)

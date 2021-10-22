@@ -1,9 +1,9 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import sys
-from pydoc import locate
 import FunctionDirectory
 import SemanticCube
+import CodeGeneration
 
 tokens = [
     'PROGRAM',
@@ -383,7 +383,7 @@ def p_estatutos(p):
               | condicion estatutos1
               | while estatutos1
               | for estatutos1
-              | expresion estatutos1
+              | est_exp estatutos1
     '''
     print('estatutos')
 
@@ -524,24 +524,27 @@ def p_for2(p):
     '''
     print('for2')
 
+def p_est_exp(p):
+    '''
+    est_exp : expresion SEMICOLON
+    '''
+    print('est_exp')
+    CodeGeneration.statements.append(CodeGeneration.statement)
+
 def p_expresion(p):
     '''
-    expresion : or
+    expresion : and expresion1
     '''
     print('expresion')
 
-def p_or(p):
-    '''
-    or : and or1
-    '''
-    print('or')
-
 def p_or1(p):
     '''
-    or1 : OR or
-        | epsilon
+    expresion1 : OR expresion
+               | epsilon
     '''
-    print('or1')
+    print('expresion1')
+    if (p[1] == '|'):
+        CodeGeneration.statement.append(p[1])
 
 def p_and(p):
     '''
@@ -555,6 +558,8 @@ def p_and1(p):
          | epsilon
     '''
     print('and1')
+    if (p[1] == '&'):
+        CodeGeneration.statement.append(p[1])
 
 def p_equal(p):
     '''
@@ -569,6 +574,8 @@ def p_equal1(p):
            | epsilon
     '''
     print('equal1')
+    if (p[1] == '==' or p[1] == '!='):
+        CodeGeneration.statement.append(p[1])
 
 def p_compare(p):
     '''
@@ -585,6 +592,8 @@ def p_compare1(p):
              | epsilon
     '''
     print('compare1')
+    if (p[1] == '<' or p[1] == '<=' or p[1] == '>' or p[1] == '>='):
+        CodeGeneration.statement.append(p[1])
 
 def p_exp(p):
     '''
@@ -599,6 +608,8 @@ def p_exp1(p):
          | epsilon
     '''
     print('exp1')
+    if (p[1] == '+' or p[1] == '-'):
+        CodeGeneration.statement.append(p[1])
 
 def p_termino(p):
     '''
@@ -614,6 +625,8 @@ def p_termino1(p):
              | epsilon
     '''
     print('termino1')
+    if (p[1] == '*' or p[1] == '/' or p[1] == '%'):
+        CodeGeneration.statement.append(p[1])
 
 def p_factor(p):
     '''
@@ -623,6 +636,8 @@ def p_factor(p):
            | factor2 varcte
     '''
     print('factor')
+    if (p[1] != '(' and p[1] != None):
+        CodeGeneration.statement.append(p[1])
 
 def p_factor1(p):
     '''
@@ -660,6 +675,9 @@ def p_error(p):
 parser = yacc.yacc()
 
 while True:
+    FunctionDirectory.resetFunctionDirectory()
+    CodeGeneration.statements.clear()
+    CodeGeneration.statement.clear()
     try:
         path_to_file = input('>> ')
         with open(path_to_file) as file:
@@ -673,3 +691,5 @@ while True:
     FunctionDirectory.printFunctionDirectory()
     print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
     SemanticCube.printSemanticCube()
+    print('\n\n> ------------------------------------------------------------ <\n                           Estatutos                            \n> ------------------------------------------------------------ <')
+    print(CodeGeneration.statements)

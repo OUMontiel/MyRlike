@@ -1,0 +1,7 @@
+Program MyRlike;
+VARS
+    int: a, b, c, d, e, f, g, h, i;
+
+main() {
+    a * b / (c + d * f / g + h) - i > (a + b) * c - d;
+}
