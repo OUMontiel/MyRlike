@@ -207,17 +207,19 @@ lexer = lex.lex()
 
 def p_programa(p):
     '''
-    programa : PROGRAM ID SEMICOLON programa1 programa2 MAIN OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
+    programa : PROGRAM programa1 programa2 main OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
     '''
     print('programa')
-    FunctionDirectory.functionIDsStack.append(p[2])
 
 def p_programa1(p):
     '''
-    programa1 : vars
-              | epsilon
+    programa1 : ID SEMICOLON vars
+              | ID SEMICOLON
     '''
     print('programa1')
+    FunctionDirectory.functionIDs.append(p[1])
+    FunctionDirectory.functionKinds.append('program')
+    FunctionDirectory.storeFunction()
 
 def p_programa2(p):
     '''
@@ -232,6 +234,14 @@ def p_programa3(p):
               | epsilon
     '''
     print('programa3')
+
+def p_main(p):
+    '''
+    main : MAIN
+    '''
+    print('main')
+    print(FunctionDirectory.functionIDs[0])
+    FunctionDirectory.currentFunction = FunctionDirectory.functionIDs[0]
 
 def p_vars(p):
     '''
@@ -281,23 +291,23 @@ def p_vars5(p):
 
 def p_lista_ids(p):
     '''
-    lista_ids : ID lista_ids1
+    lista_ids : ID OPENBOX exp CLOSEBOX lista_ids1
+              | ID lista_ids1
+              | STRING lista_ids1
     '''
     print('lista_ids')
+    if (p[1][0] == '"' or p[1][0] == '\''):
+        CodeGeneration.operands.append(p[1][1:-1])
+    else:
+        CodeGeneration.operands.append(p[1])
+    CodeGeneration.operators.append('read_write')
 
 def p_lista_ids1(p):
     '''
-    lista_ids1 : lista_ids2
-               | OPENBOX exp CLOSEBOX lista_ids2
-    '''
-    print('lista_ids1')
-
-def p_lista_ids2(p):
-    '''
-    lista_ids2 : COMMA lista_ids
+    lista_ids1 : COMMA lista_ids
                | epsilon
     '''
-    print('lista_ids2')
+    print('lista_ids1')
 
 def p_tipo(p):
     '''
@@ -306,6 +316,13 @@ def p_tipo(p):
          | TYPECHAR
     '''
     print('tipo')
+    FunctionDirectory.typesStack.append(p[1])
+
+def p_tipo_void(p):
+    '''
+    tipo_void : TYPEVOID
+    '''
+    print('tipo_void')
     FunctionDirectory.typesStack.append(p[1])
 
 def p_funciones(p):
@@ -317,20 +334,17 @@ def p_funciones(p):
 
 def p_funciones1(p):
     '''
-    funciones1 : tipo funciones2
-               | TYPEVOID funciones2
+    funciones1 : tipo funciones2 funciones3
+               | tipo_void funciones2 funciones3
     '''
     print('funciones1')
-    if (p[1] == 'void'):
-        print()
-        FunctionDirectory.typesStack.append(p[1])
 
 def p_funciones2(p):
     '''
-    funciones2 : ID OPENPAR funciones3
+    funciones2 : ID OPENPAR
     '''
     print('funciones2')
-    FunctionDirectory.functionIDsStack.append(p[1])
+    FunctionDirectory.functionIDs.append(p[1])
 
 def p_funciones3(p):
     '''
@@ -347,8 +361,8 @@ def p_funciones4(p):
 
 def p_funciones5(p):
     '''
-    funciones5 : vars OPENCURLY funciones6
-               | OPENCURLY funciones6
+    funciones5 : vars guardar_func OPENCURLY funciones6
+               | guardar_func OPENCURLY funciones6
     '''
     print('funciones5')
 
@@ -358,6 +372,15 @@ def p_funciones6(p):
                | CLOSECURLY funciones
     '''
     print('funciones6')
+
+def p_guardar_func(p):
+    '''
+    guardar_func : epsilon
+    '''
+    print('guardar_func')
+    FunctionDirectory.functionKinds.append('function')
+    FunctionDirectory.storeFunction()
+    FunctionDirectory.currentFunction = FunctionDirectory.functionIDs[-1]
 
 def p_parameters(p):
     '''
@@ -396,16 +419,21 @@ def p_estatutos1(p):
 
 def p_asignacion(p):
     '''
-    asignacion : ID asignacion1 IS expresion SEMICOLON
+    asignacion : asignacion1 expresion SEMICOLON
     '''
     print('asignacion')
+    CodeGeneration.generateAssignment()
 
 def p_asignacion1(p):
     '''
-    asignacion1 : OPENBOX exp CLOSEBOX
-                | epsilon
+    asignacion1 : ID OPENBOX exp CLOSEBOX IS
+                | ID IS
     '''
     print('asignacion1')
+    if (p[2] == '='):
+        CodeGeneration.operands.append(p[1])
+        CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
+        CodeGeneration.operators.append(p[2])
 
 def p_llamada(p):
     '''
@@ -437,23 +465,25 @@ def p_retorno(p):
     retorno : RETURN OPENPAR exp CLOSEPAR SEMICOLON
     '''
     print('retorno')
+    CodeGeneration.generateReturn(FunctionDirectory.functionTypes[FunctionDirectory.functionIDs.index(FunctionDirectory.currentFunction)])
 
 def p_lectura(p):
     '''
     lectura : READ OPENPAR lista_ids CLOSEPAR SEMICOLON
     '''
     print('lectura')
+    CodeGeneration.generateInput()
 
 def p_escritura(p):
     '''
     escritura : WRITE OPENPAR escritura1 CLOSEPAR SEMICOLON
     '''
     print('escritura')
+    CodeGeneration.generateOutput()
 
 def p_escritura1(p):
     '''
-    escritura1 : STRING escritura2
-               | lista_ids escritura2
+    escritura1 : lista_ids escritura2
     '''
     print('escritura1')
 
@@ -529,115 +559,183 @@ def p_est_exp(p):
     est_exp : expresion SEMICOLON
     '''
     print('est_exp')
-    CodeGeneration.statements.append(CodeGeneration.statement)
 
 def p_expresion(p):
     '''
-    expresion : and expresion1
+    expresion : and guardar_expresion
+              | and guardar_expresion expresion1 expresion
     '''
     print('expresion')
 
-def p_or1(p):
+def p_expresion1(p):
     '''
-    expresion1 : OR expresion
-               | epsilon
+    expresion1 : OR
     '''
     print('expresion1')
-    if (p[1] == '|'):
-        CodeGeneration.statement.append(p[1])
+    CodeGeneration.operators.append(p[1])
+
+def p_guardar_expresion(p):
+    '''
+    guardar_expresion : epsilon
+    '''
+    print('guardar_expresion')
+    temp = CodeGeneration.generateQuadruple(['+', '-'])
+    if (temp != None):
+        CodeGeneration.operands.append(temp[0])
+        CodeGeneration.types.append(temp[1])
 
 def p_and(p):
     '''
-    and : equal and1
+    and : equal guardar_and
+        | equal guardar_and and1 and
     '''
     print('and')
 
 def p_and1(p):
     '''
-    and1 : AND and
-         | epsilon
+    and1 : AND
     '''
     print('and1')
-    if (p[1] == '&'):
-        CodeGeneration.statement.append(p[1])
+    CodeGeneration.operators.append(p[1])
+
+def p_guardar_and(p):
+    '''
+    guardar_and : epsilon
+    '''
+    print('guardar_and')
+    temp = CodeGeneration.generateQuadruple(['&&'])
+    if (temp != None):
+        CodeGeneration.operands.append(temp[0])
+        CodeGeneration.types.append(temp[1])
 
 def p_equal(p):
     '''
-    equal : compare equal1
+    equal : compare guardar_equal
+          | compare guardar_equal equal1 equal
     '''
     print('equal')
 
 def p_equal1(p):
     '''
-    equal1 : EQ equal
-           | NE equal
-           | epsilon
+    equal1 : EQ
+           | NE
     '''
     print('equal1')
-    if (p[1] == '==' or p[1] == '!='):
-        CodeGeneration.statement.append(p[1])
+    CodeGeneration.operators.append(p[1])
+
+def p_guardar_equal(p):
+    '''
+    guardar_equal : epsilon
+    '''
+    print('guardar_equal')
+    temp = CodeGeneration.generateQuadruple(['==', '!='])
+    if (temp != None):
+        CodeGeneration.operands.append(temp[0])
+        CodeGeneration.types.append(temp[1])
 
 def p_compare(p):
     '''
-    compare : exp compare1
+    compare : exp guardar_compare
+            | exp guardar_compare compare1 compare
     '''
     print('compare')
 
 def p_compare1(p):
     '''
-    compare1 : LT compare
-             | LE compare
-             | GT compare
-             | GE compare
-             | epsilon
+    compare1 : LT
+             | LE
+             | GT
+             | GE
     '''
     print('compare1')
-    if (p[1] == '<' or p[1] == '<=' or p[1] == '>' or p[1] == '>='):
-        CodeGeneration.statement.append(p[1])
+    CodeGeneration.operators.append(p[1])
+
+def p_guardar_compare(p):
+    '''
+    guardar_compare : epsilon
+    '''
+    print('guardar_compare')
+    temp = CodeGeneration.generateQuadruple(['<', '<=', '>', '>='])
+    if (temp != None):
+        CodeGeneration.operands.append(temp[0])
+        CodeGeneration.types.append(temp[1])
 
 def p_exp(p):
     '''
-    exp : termino exp1
+    exp : termino guardar_exp
+        | termino guardar_exp exp1 exp
     '''
     print('exp')
 
 def p_exp1(p):
     '''
-    exp1 : PLUS exp
-         | MINUS exp
-         | epsilon
+    exp1 : PLUS
+         | MINUS
     '''
     print('exp1')
-    if (p[1] == '+' or p[1] == '-'):
-        CodeGeneration.statement.append(p[1])
+    CodeGeneration.operators.append(p[1])
+
+def p_guardar_exp(p):
+    '''
+    guardar_exp : epsilon
+    '''
+    print('guardar_exp')
+    temp = CodeGeneration.generateQuadruple(['+', '-'])
+    if (temp != None):
+        CodeGeneration.operands.append(temp[0])
+        CodeGeneration.types.append(temp[1])
 
 def p_termino(p):
     '''
-    termino : factor termino1
+    termino : factor guardar_termino
+            | factor guardar_termino termino1 termino
     '''
     print('termino')
 
 def p_termino1(p):
     '''
-    termino1 : MULTIPLY termino
-             | DIVIDE termino
-             | MODULO termino
-             | epsilon
+    termino1 : MULTIPLY
+             | DIVIDE
+             | MODULO
     '''
     print('termino1')
-    if (p[1] == '*' or p[1] == '/' or p[1] == '%'):
-        CodeGeneration.statement.append(p[1])
+    CodeGeneration.operators.append(p[1])
+
+def p_guardar_termino(p):
+    '''
+    guardar_termino : epsilon
+    '''
+    print('guardar_termino')
+    temp = CodeGeneration.generateQuadruple(['*', '/', '%'])
+    if (temp != None):
+        CodeGeneration.operands.append(temp[0])
+        CodeGeneration.types.append(temp[1])
 
 def p_factor(p):
     '''
     factor : ID factor1
-           | OPENPAR expresion CLOSEPAR
+           | openpar expresion closepar
            | funcion
            | factor2 varcte
     '''
     print('factor')
     if (p[1] != '(' and p[1] != None):
-        CodeGeneration.statement.append(p[1])
+        CodeGeneration.operands.append(p[1])
+        CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
+
+def p_openpar(p):
+    '''
+    openpar : OPENPAR
+    '''
+    print('openpar')
+    CodeGeneration.operators.append(p[1])
+
+def p_closepar(p):
+    '''
+    closepar : CLOSEPAR
+    '''
+    print('closepar')
+    CodeGeneration.operators.pop()
 
 def p_factor1(p):
     '''
@@ -676,8 +774,6 @@ parser = yacc.yacc()
 
 while True:
     FunctionDirectory.resetFunctionDirectory()
-    CodeGeneration.statements.clear()
-    CodeGeneration.statement.clear()
     try:
         path_to_file = input('>> ')
         with open(path_to_file) as file:
@@ -687,9 +783,11 @@ while True:
     print('\n\n> ------------------------------------------------------------ <\n                      Analizador Semántico                      \n> ------------------------------------------------------------ <')
     parser.parse(''.join(s).replace("\n", " "))
     print('\n\n> ------------------------------------------------------------ <\n                  Directorio de Procedimientos                  \n> ------------------------------------------------------------ <')
-    FunctionDirectory.buildFunctionDirectory()
     FunctionDirectory.printFunctionDirectory()
     print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
     SemanticCube.printSemanticCube()
     print('\n\n> ------------------------------------------------------------ <\n                           Estatutos                            \n> ------------------------------------------------------------ <')
-    print(CodeGeneration.statements)
+    print(CodeGeneration.operands)
+    print(CodeGeneration.types)
+    print(CodeGeneration.operators)
+    print(CodeGeneration.quadruples)

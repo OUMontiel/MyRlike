@@ -1,0 +1,7 @@
+Program MyRlike;
+VARS
+    int: a, b, c, d;
+
+main() {
+    write("hey", a, "hoy", b, "huy");
+}

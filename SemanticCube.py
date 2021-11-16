@@ -20,8 +20,10 @@ class Operators(Enum):
     DIVIDE = 11
     MODULO = 12
 
+typeNames = ['int', 'float', 'char']
 operatorNames = ['||', '&&', '==', '!=', '<', '<=', '>', '>=', '+', '-', '*', '/', '%']
 
+'''
 semanticCube = [[
                  [Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT],
                  [Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT, 'error'],
@@ -36,6 +38,22 @@ semanticCube = [[
                  [Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.CHAR, Types.CHAR, Types.CHAR, Types.CHAR, Types.CHAR],
                  [Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, 'error', 'error', 'error', 'error', 'error'],
                  [Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.INT, Types.CHAR, Types.CHAR, Types.CHAR, Types.CHAR, Types.CHAR]
+                ]]
+'''
+semanticCube = [[
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'int'],
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'float', 'float', 'float', 'float', 'error'],
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'char', 'char', 'char', 'char', 'char'],
+                ],
+                [
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'float', 'float', 'float', 'float', 'error'],
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'float', 'float', 'float', 'float', 'error'],
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'error', 'error', 'error', 'error', 'error'],
+                ],
+                [
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'char', 'char', 'char', 'char', 'char'],
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'error', 'error', 'error', 'error', 'error'],
+                 ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'char', 'char', 'char', 'char', 'char']
                 ]]
 
 def printDivider():
@@ -61,11 +79,11 @@ def printSemanticCube():
         for type2 in Types:
             print('|', type2.name, end = '\t'),
             for operator in Operators:
-                if semanticCube[type1.value][type2.value][operator.value] == Types.INT:
+                if semanticCube[type1.value][type2.value][operator.value] == 'int':
                     print('| INT', end = '\t')
-                elif semanticCube[type1.value][type2.value][operator.value] == Types.FLOAT:
+                elif semanticCube[type1.value][type2.value][operator.value] == 'float':
                     print('| FLOAT', end = '\t')
-                elif semanticCube[type1.value][type2.value][operator.value] == Types.CHAR:
+                elif semanticCube[type1.value][type2.value][operator.value] == 'char':
                     print('| CHAR', end = '\t')
                 else:
                     print('| error', end = '\t')

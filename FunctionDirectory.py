@@ -1,18 +1,16 @@
 functionDirectory = {}
 
-functionIDsStack = []
-functionTypesStack = []
-variableTablesStack = []
+currentFunction = ''
+functionIDs = []
+functionTypes = []
+functionKinds = []
+variablesTable = []
 
 variableIDsStack = []
 variableTypesCountStack = []
 variableTypesCounter = -1
 parameterIDsStack = []
 typesStack = []
-
-def storeFunction(id, type, kind, table):
-    print(id, type, kind, table)
-    functionDirectory[id] = [type, kind, table]
 
 def buildTable():
     variables = {}
@@ -27,16 +25,16 @@ def buildTable():
     
     while(len(parameterIDsStack) > 0):
         if parameterIDsStack[0] in variables:
-            print("ERROR")
+            print("ERROR: Variable name already exists!")
             exit()
         else:
             variables[parameterIDsStack.pop(0)] = typesStack.pop()
 
-    variableTablesStack.append(variables)
+    variablesTable.append(variables)
     if typesStack:
-        functionTypesStack.append(typesStack.pop())
+        functionTypes.append(typesStack.pop())
     else:
-        functionTypesStack.append('void')
+        functionTypes.append('void')
 
     variableIDsStack.clear()
     variableTypesCountStack.clear()
@@ -44,10 +42,13 @@ def buildTable():
     parameterIDsStack.clear()
     typesStack.clear()
 
-def buildFunctionDirectory():
-    functionDirectory[functionIDsStack.pop()] = [functionTypesStack.pop(0), 'program', variableTablesStack.pop(0)]
-    while len(functionIDsStack) > 0:
-        functionDirectory[functionIDsStack.pop()] = [functionTypesStack.pop(0), 'function', variableTablesStack.pop(0)]
+def storeFunction():
+    print(functionIDs[-1])
+    if(functionIDs[-1] in functionDirectory):
+        print('ERROR: Function name already exists!')
+        exit()
+    else:
+        functionDirectory[functionIDs[-1]] = [functionTypes[-1], functionKinds[-1], variablesTable[-1]]
 
 def printFunctionDirectory():
     for name, data in functionDirectory.items():
@@ -61,11 +62,25 @@ def printFunctionDirectory():
 
 def resetFunctionDirectory():
     functionDirectory.clear()
-    functionIDsStack.clear()
-    functionTypesStack.clear()
-    variableTablesStack.clear()
+    functionIDs.clear()
+    functionTypes.clear()
+    functionKinds.clear()
+    variablesTable.clear()
     variableIDsStack.clear()
     variableTypesCountStack.clear()
     variableTypesCounter = -1
     parameterIDsStack.clear()
     typesStack.clear()
+
+def getVariableType(variable):
+    if (currentFunction in functionDirectory):
+        currentVariablesTable = functionDirectory[currentFunction]
+        for variableName, variableType in currentVariablesTable[2].items():
+            if (variableName == variable):
+                return variableType
+        currentVariablesTable = functionDirectory[functionIDs[0]]
+        for variableName, variableType in currentVariablesTable[2].items():
+            if (variableName == variable):
+                return variableType
+    print('ERROR: Variable < ', variable, ' > not found!')
+    exit()
