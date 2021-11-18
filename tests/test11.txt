@@ -1,0 +1,18 @@
+Program MyRlike;
+VARS
+    int: a, b, c, d, e;
+
+main() {
+    if (a * b + c > d - e) then {
+        b = c + d * c;
+        write(b, a + b);
+        if (a > b) then {
+            c = d + e;
+        }
+    }
+    else {
+        a = b + c;
+        write(a);
+    }
+    c = d * e;
+}

@@ -60,18 +60,6 @@ def printFunctionDirectory():
             print('\tName: ', variableName, ' (', variableType, ')')
         print('------------------------')
 
-def resetFunctionDirectory():
-    functionDirectory.clear()
-    functionIDs.clear()
-    functionTypes.clear()
-    functionKinds.clear()
-    variablesTable.clear()
-    variableIDsStack.clear()
-    variableTypesCountStack.clear()
-    variableTypesCounter = -1
-    parameterIDsStack.clear()
-    typesStack.clear()
-
 def getVariableType(variable):
     if (currentFunction in functionDirectory):
         currentVariablesTable = functionDirectory[currentFunction]
@@ -84,3 +72,28 @@ def getVariableType(variable):
                 return variableType
     print('ERROR: Variable < ', variable, ' > not found!')
     exit()
+
+def findVariable(variable):
+    if (currentFunction in functionDirectory):
+        currentVariablesTable = functionDirectory[currentFunction]
+        for variableName, variableType in currentVariablesTable[2].items():
+            if (variableName == variable):
+                print('ERROR: Variable < ', variable, ' > already exists!')
+                exit()
+        currentVariablesTable = functionDirectory[functionIDs[0]]
+        for variableName, variableType in currentVariablesTable[2].items():
+            if (variableName == variable):
+                print('ERROR: Variable < ', variable, ' > already exists!')
+                exit()
+
+def resetFunctionDirectory():
+    functionDirectory.clear()
+    functionIDs.clear()
+    functionTypes.clear()
+    functionKinds.clear()
+    variablesTable.clear()
+    variableIDsStack.clear()
+    variableTypesCountStack.clear()
+    variableTypesCounter = -1
+    parameterIDsStack.clear()
+    typesStack.clear()

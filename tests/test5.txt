@@ -1,7 +1,7 @@
 Program MyRlike;
 VARS
-    int: a, b, c, d;
+    int: a, b, c, d, e, z;
 
 main() {
-    a = b + c * d;
+    z = a * (b + c * d - e) > b + (c * d - e);
 }

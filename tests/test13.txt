@@ -1,0 +1,22 @@
+Program MyRlike;
+VARS
+    int: a, b, c, d, e;
+
+main() {
+    while (a + b * c < d) do {
+        if (a + b < c) then {
+            a = b + c;
+            while (a > b + c) do {
+                a = a - 1;
+            }
+        }
+        else {
+            while (b > c + d) do {
+                a = b + c * d;
+                b = a - d;
+            }
+        }
+    }
+    a = b * c;
+    c = 0;
+}

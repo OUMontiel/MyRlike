@@ -293,14 +293,10 @@ def p_lista_ids(p):
     '''
     lista_ids : ID OPENBOX exp CLOSEBOX lista_ids1
               | ID lista_ids1
-              | STRING lista_ids1
     '''
     print('lista_ids')
-    if (p[1][0] == '"' or p[1][0] == '\''):
-        CodeGeneration.operands.append(p[1][1:-1])
-    else:
-        CodeGeneration.operands.append(p[1])
-    CodeGeneration.operators.append('read_write')
+    CodeGeneration.operands.append(p[1])
+    CodeGeneration.operators.append('read')
 
 def p_lista_ids1(p):
     '''
@@ -361,8 +357,8 @@ def p_funciones4(p):
 
 def p_funciones5(p):
     '''
-    funciones5 : vars guardar_func OPENCURLY funciones6
-               | guardar_func OPENCURLY funciones6
+    funciones5 : vars store_function OPENCURLY funciones6
+               | store_function OPENCURLY funciones6
     '''
     print('funciones5')
 
@@ -373,11 +369,11 @@ def p_funciones6(p):
     '''
     print('funciones6')
 
-def p_guardar_func(p):
+def p_store_function(p):
     '''
-    guardar_func : epsilon
+    store_function : epsilon
     '''
-    print('guardar_func')
+    print('store_function')
     FunctionDirectory.functionKinds.append('function')
     FunctionDirectory.storeFunction()
     FunctionDirectory.currentFunction = FunctionDirectory.functionIDs[-1]
@@ -479,11 +475,11 @@ def p_escritura(p):
     escritura : WRITE OPENPAR escritura1 CLOSEPAR SEMICOLON
     '''
     print('escritura')
-    CodeGeneration.generateOutput()
 
 def p_escritura1(p):
     '''
-    escritura1 : lista_ids escritura2
+    escritura1 : escritura_string escritura2
+               | escritura_expresion escritura2
     '''
     print('escritura1')
 
@@ -494,76 +490,141 @@ def p_escritura2(p):
     '''
     print('escritura2')
 
+def p_escritura_string(p):
+    '''
+    escritura_string : STRING
+    '''
+    print('escritura_string')
+    CodeGeneration.operands.append(p[1][1:-1])
+    CodeGeneration.types.append('string')
+    CodeGeneration.operators.append('write')
+    CodeGeneration.generateOutput()
+
+def p_escritura_expresion(p):
+    '''
+    escritura_expresion : expresion
+    '''
+    print('escritura_expresion')
+    CodeGeneration.operators.append('write')
+    CodeGeneration.generateOutput()
+
 def p_condicion(p):
     '''
-    condicion : IF OPENPAR expresion CLOSEPAR THEN OPENCURLY condicion1
+    condicion : IF OPENPAR expresion CLOSEPAR THEN condicion_punto1 OPENCURLY estatutos CLOSECURLY condicion1
     '''
     print('condicion')
 
 def p_condicion1(p):
     '''
-    condicion1 : estatutos condicion1
-               | CLOSECURLY condicion2
+    condicion1 : ELSE condicion_punto3 OPENCURLY estatutos CLOSECURLY condicion_punto4
+               | condicion_punto2 epsilon
     '''
     print('condicion1')
 
-def p_condicion2(p):
+def p_condicion_punto1(p):
     '''
-    condicion2 : ELSE OPENCURLY condicion3
-               | epsilon
+    condicion_punto1 : epsilon
     '''
-    print('condicion2')
+    print('condicion_punto1')
+    CodeGeneration.condicionPoint1()
 
-def p_condicion3(p):
+def p_condicion_punto2(p):
     '''
-    condicion3 : estatutos condicion3
-               | CLOSECURLY
+    condicion_punto2 : epsilon
     '''
-    print('condicion3')
+    print('condicion_punto2')
+    CodeGeneration.condicionPoint2()
+
+def p_condicion_punto3(p):
+    '''
+    condicion_punto3 : epsilon
+    '''
+    print('condicion_punto3')
+    CodeGeneration.condicionPoint3()
+
+def p_condicion_punto4(p):
+    '''
+    condicion_punto4 : epsilon
+    '''
+    print('condicion_punto4')
+    CodeGeneration.condicionPoint4()
 
 def p_while(p):
     '''
-    while : WHILE OPENPAR expresion CLOSEPAR DO OPENCURLY while1
+    while : WHILE while_punto1 OPENPAR expresion CLOSEPAR while_punto2 DO OPENCURLY estatutos CLOSECURLY while_punto3
     '''
     print('while')
 
-def p_while1(p):
+def p_while_punto1(p):
     '''
-    while1 : estatutos while1
-           | CLOSECURLY
+    while_punto1 : epsilon
     '''
-    print('while1')
+    print('while_punto1')
+    CodeGeneration.whilePoint1()
+
+def p_while_punto2(p):
+    '''
+    while_punto2 : epsilon
+    '''
+    print('while_punto2')
+    CodeGeneration.whilePoint2()
+
+def p_while_punto3(p):
+    '''
+    while_punto3 : epsilon
+    '''
+    print('while_punto3')
+    CodeGeneration.whilePoint3()
 
 def p_for(p):
     '''
-    for : FOR ID for1 IS exp TO exp DO OPENCURLY for2 CLOSECURLY
+    for : FOR for1 IS exp for_punto1 TO exp for_punto2 DO OPENCURLY estatutos CLOSECURLY for_punto3
     '''
     print('for')
 
 def p_for1(p):
     '''
-    for1 : OPENBOX exp CLOSEBOX
-         | epsilon
+    for1 : ID OPENBOX exp CLOSEBOX
+         | ID
     '''
     print('for1')
+    CodeGeneration.operands.append(p[1])
+    CodeGeneration.types.append('int')
 
-def p_for2(p):
+def p_for_punto1(p):
     '''
-    for2 : estatutos for2
-         | epsilon
+    for_punto1 : epsilon
     '''
-    print('for2')
+    print('for_punto1')
+    CodeGeneration.forPoint1()
+
+def p_for_punto2(p):
+    '''
+    for_punto2 : epsilon
+    '''
+    print('for_punto2')
+    CodeGeneration.forPoint2()
+
+def p_for_punto3(p):
+    '''
+    for_punto3 : epsilon
+    '''
+    print('for_punto3')
+    CodeGeneration.forPoint3()
+
 
 def p_est_exp(p):
     '''
     est_exp : expresion SEMICOLON
     '''
     print('est_exp')
+    CodeGeneration.operands.pop()
+    CodeGeneration.types.pop()
 
 def p_expresion(p):
     '''
-    expresion : and guardar_expresion
-              | and guardar_expresion expresion1 expresion
+    expresion : and generate_expresion
+              | and generate_expresion expresion1 expresion
     '''
     print('expresion')
 
@@ -574,11 +635,11 @@ def p_expresion1(p):
     print('expresion1')
     CodeGeneration.operators.append(p[1])
 
-def p_guardar_expresion(p):
+def p_generate_expresion(p):
     '''
-    guardar_expresion : epsilon
+    generate_expresion : epsilon
     '''
-    print('guardar_expresion')
+    print('generate_expresion')
     temp = CodeGeneration.generateQuadruple(['+', '-'])
     if (temp != None):
         CodeGeneration.operands.append(temp[0])
@@ -586,8 +647,8 @@ def p_guardar_expresion(p):
 
 def p_and(p):
     '''
-    and : equal guardar_and
-        | equal guardar_and and1 and
+    and : equal generate_and
+        | equal generate_and and1 and
     '''
     print('and')
 
@@ -598,11 +659,11 @@ def p_and1(p):
     print('and1')
     CodeGeneration.operators.append(p[1])
 
-def p_guardar_and(p):
+def p_generate_and(p):
     '''
-    guardar_and : epsilon
+    generate_and : epsilon
     '''
-    print('guardar_and')
+    print('generate_and')
     temp = CodeGeneration.generateQuadruple(['&&'])
     if (temp != None):
         CodeGeneration.operands.append(temp[0])
@@ -610,8 +671,8 @@ def p_guardar_and(p):
 
 def p_equal(p):
     '''
-    equal : compare guardar_equal
-          | compare guardar_equal equal1 equal
+    equal : compare generate_equal
+          | compare generate_equal equal1 equal
     '''
     print('equal')
 
@@ -623,11 +684,11 @@ def p_equal1(p):
     print('equal1')
     CodeGeneration.operators.append(p[1])
 
-def p_guardar_equal(p):
+def p_generate_equal(p):
     '''
-    guardar_equal : epsilon
+    generate_equal : epsilon
     '''
-    print('guardar_equal')
+    print('generate_equal')
     temp = CodeGeneration.generateQuadruple(['==', '!='])
     if (temp != None):
         CodeGeneration.operands.append(temp[0])
@@ -635,8 +696,8 @@ def p_guardar_equal(p):
 
 def p_compare(p):
     '''
-    compare : exp guardar_compare
-            | exp guardar_compare compare1 compare
+    compare : exp generate_compare
+            | exp generate_compare compare1 compare
     '''
     print('compare')
 
@@ -650,11 +711,11 @@ def p_compare1(p):
     print('compare1')
     CodeGeneration.operators.append(p[1])
 
-def p_guardar_compare(p):
+def p_generate_compare(p):
     '''
-    guardar_compare : epsilon
+    generate_compare : epsilon
     '''
-    print('guardar_compare')
+    print('generate_compare')
     temp = CodeGeneration.generateQuadruple(['<', '<=', '>', '>='])
     if (temp != None):
         CodeGeneration.operands.append(temp[0])
@@ -662,8 +723,8 @@ def p_guardar_compare(p):
 
 def p_exp(p):
     '''
-    exp : termino guardar_exp
-        | termino guardar_exp exp1 exp
+    exp : termino generate_exp
+        | termino generate_exp exp1 exp
     '''
     print('exp')
 
@@ -675,11 +736,11 @@ def p_exp1(p):
     print('exp1')
     CodeGeneration.operators.append(p[1])
 
-def p_guardar_exp(p):
+def p_generate_exp(p):
     '''
-    guardar_exp : epsilon
+    generate_exp : epsilon
     '''
-    print('guardar_exp')
+    print('generate_exp')
     temp = CodeGeneration.generateQuadruple(['+', '-'])
     if (temp != None):
         CodeGeneration.operands.append(temp[0])
@@ -687,8 +748,8 @@ def p_guardar_exp(p):
 
 def p_termino(p):
     '''
-    termino : factor guardar_termino
-            | factor guardar_termino termino1 termino
+    termino : factor generate_termino
+            | factor generate_termino termino1 termino
     '''
     print('termino')
 
@@ -701,11 +762,11 @@ def p_termino1(p):
     print('termino1')
     CodeGeneration.operators.append(p[1])
 
-def p_guardar_termino(p):
+def p_generate_termino(p):
     '''
-    guardar_termino : epsilon
+    generate_termino : epsilon
     '''
-    print('guardar_termino')
+    print('generate_termino')
     temp = CodeGeneration.generateQuadruple(['*', '/', '%'])
     if (temp != None):
         CodeGeneration.operands.append(temp[0])
@@ -723,20 +784,6 @@ def p_factor(p):
         CodeGeneration.operands.append(p[1])
         CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
 
-def p_openpar(p):
-    '''
-    openpar : OPENPAR
-    '''
-    print('openpar')
-    CodeGeneration.operators.append(p[1])
-
-def p_closepar(p):
-    '''
-    closepar : CLOSEPAR
-    '''
-    print('closepar')
-    CodeGeneration.operators.pop()
-
 def p_factor1(p):
     '''
     factor1 : OPENBOX exp CLOSEBOX
@@ -751,15 +798,63 @@ def p_factor2(p):
             | epsilon
     '''
     print('factor2')
+    if (p[1] == '+'):
+        CodeGeneration.extraOperator = '+'
+    elif (p[1] == '-'):
+        CodeGeneration.extraOperator = '-'
+    else:
+        CodeGeneration.extraOperator = ''
+
+def p_openpar(p):
+    '''
+    openpar : OPENPAR
+    '''
+    print('openpar')
+    CodeGeneration.operators.append(p[1])
+
+def p_closepar(p):
+    '''
+    closepar : CLOSEPAR
+    '''
+    print('closepar')
+    CodeGeneration.operators.pop()
 
 def p_varcte(p):
     '''
     varcte : ID
-           | INT
-           | FLOAT
-           | CHAR
+           | int
+           | float
+           | char
     '''
     print('varcte')
+    if (p[1] != None):
+        CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+        CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
+
+def p_int(p):
+    '''
+    int : INT
+    '''
+    print('int')
+    CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    CodeGeneration.types.append('int')
+
+def p_float(p):
+    '''
+    float : FLOAT
+    '''
+    print('float')
+    CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    CodeGeneration.types.append('float')
+
+def p_char(p):
+    '''
+    char : CHAR
+    '''
+    print('char')
+    CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    CodeGeneration.types.append('char')
+
 
 def p_epsilon(p):
     '''
@@ -774,6 +869,7 @@ parser = yacc.yacc()
 
 while True:
     FunctionDirectory.resetFunctionDirectory()
+    CodeGeneration.resetCodeGeneration()
     try:
         path_to_file = input('>> ')
         with open(path_to_file) as file:
@@ -786,7 +882,7 @@ while True:
     FunctionDirectory.printFunctionDirectory()
     print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
     SemanticCube.printSemanticCube()
-    print('\n\n> ------------------------------------------------------------ <\n                           Estatutos                            \n> ------------------------------------------------------------ <')
+    print('\n> ------------------------------------------------------------ <\n                           Estatutos                            \n> ------------------------------------------------------------ <')
     print(CodeGeneration.operands)
     print(CodeGeneration.types)
     print(CodeGeneration.operators)

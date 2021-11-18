@@ -1,0 +1,11 @@
+Program MyRlike;
+VARS
+    int: a, b, c, d, e;
+
+main() {
+    while (a > b * c) do {
+        a = a - d;
+        write(a);
+    }
+    b = c + a;
+}
