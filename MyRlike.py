@@ -55,23 +55,23 @@ tokens = [
 ]
 
 reserved = {
-	'Program': 'PROGRAM',
-	'main': 'MAIN',
-	'VARS': 'VARS',
+    'Program': 'PROGRAM',
+    'main': 'MAIN',
+    'VARS': 'VARS',
     'function' : 'FUNCTION',
-	'return': 'RETURN',
-	'read': 'READ',
-	'write': 'WRITE',
-	'if': 'IF',
-	'then': 'THEN',
-	'else': 'ELSE',
-	'while': 'WHILE',
-	'do': 'DO',
-	'for': 'FOR',
-	'to': 'TO',
-	'float': 'TYPEFLOAT',
-	'int': 'TYPEINT',
-	'char': 'TYPECHAR',
+    'return': 'RETURN',
+    'read': 'READ',
+    'write': 'WRITE',
+    'if': 'IF',
+    'then': 'THEN',
+    'else': 'ELSE',
+    'while': 'WHILE',
+    'do': 'DO',
+    'for': 'FOR',
+    'to': 'TO',
+    'float': 'TYPEFLOAT',
+    'int': 'TYPEINT',
+    'char': 'TYPECHAR',
     'void': 'TYPEVOID'
 }
 
@@ -103,76 +103,76 @@ t_MODULO = r'\%'
 t_ignore = r' '
 
 def t_PROGRAM(t):
-	r'Program'
-	return t
+    r'Program'
+    return t
 
 def t_MAIN(t):
-	r'main'
-	return t
+    r'main'
+    return t
 
 def t_VARS(t):
-	r'VARS'
-	return t
+    r'VARS'
+    return t
 
 def t_FUNCTION(t):
-	r'function'
-	return t
+    r'function'
+    return t
 
 def t_RETURN(t):
-	r'return'
-	return t
+    r'return'
+    return t
 
 def t_READ(t):
-	r'read'
-	return t
+    r'read'
+    return t
 
 def t_WRITE(t):
-	r'write'
-	return t
+    r'write'
+    return t
 
 def t_IF(t):
-	r'if'
-	return t
+    r'if'
+    return t
 
 def t_THEN(t):
-	r'then'
-	return t
+    r'then'
+    return t
 
 def t_ELSE(t):
-	r'else'
-	return t
+    r'else'
+    return t
 
 def t_WHILE(t):
-	r'while'
-	return t
+    r'while'
+    return t
 
 def t_DO(t):
-	r'do'
-	return t
+    r'do'
+    return t
 
 def t_FOR(t):
-	r'for'
-	return t
+    r'for'
+    return t
 
 def t_TO(t):
-	r'to'
-	return t
+    r'to'
+    return t
 
 def t_TYPEFLOAT(t):
-	r'float'
-	return t
+    r'float'
+    return t
 
 def t_TYPEINT(t):
-	r'int'
-	return t
+    r'int'
+    return t
 
 def t_TYPECHAR(t):
-	r'char'
-	return t
+    r'char'
+    return t
 
 def t_TYPEVOID(t):
-	r'void'
-	return t
+    r'void'
+    return t
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
@@ -190,26 +190,27 @@ def t_INT(t):
     return t
 
 def t_CHAR(t):
-	r'\'([^\\\']|(\\\')|(\\\\))?\''
-	t.value = str(t.value)
-	return t
+    r'\'([^\\\']|(\\\')|(\\\\))?\''
+    t.value = str(t.value)
+    return t
 
 def t_STRING(t):
-	r'\"([^\\\"]|(\\\")|(\\\\))*\"'
-	t.value = str(t.value)
-	return t
+    r'\"([^\\\"]|(\\\")|(\\\\))*\"'
+    t.value = str(t.value)
+    return t
 
 def t_error(t):
-    print("LEXER ERROR: ", t.value)
+    print('LEXER ERROR: ', t.value)
     t.lexer.skip(1)
 
 lexer = lex.lex()
 
 def p_programa(p):
     '''
-    programa : PROGRAM programa1 programa2 main OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
+    programa : PROGRAM programa_punto1 programa1 programa2 main OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
     '''
     print('programa')
+    CodeGeneration.quadruples.append(['end', None, None, None])
 
 def p_programa1(p):
     '''
@@ -217,9 +218,12 @@ def p_programa1(p):
               | ID SEMICOLON
     '''
     print('programa1')
+    FunctionDirectory.buildTables()
+    FunctionDirectory.variableTypesCountStack.clear()
+    FunctionDirectory.variableTypesCounter = -1
     FunctionDirectory.functionIDs.append(p[1])
     FunctionDirectory.functionKinds.append('program')
-    FunctionDirectory.storeFunction()
+    FunctionDirectory.storeFunction(len(CodeGeneration.quadruples))
 
 def p_programa2(p):
     '''
@@ -235,6 +239,13 @@ def p_programa3(p):
     '''
     print('programa3')
 
+def p_programa_punto1(p):
+    '''
+    programa_punto1 : epsilon
+    '''
+    print('programa_punto1')
+    CodeGeneration.quadruples.append(['goto', 'main', None, None])
+
 def p_main(p):
     '''
     main : MAIN
@@ -248,9 +259,6 @@ def p_vars(p):
     vars : VARS vars1
     '''
     print('vars')
-    FunctionDirectory.buildTable()
-    FunctionDirectory.variableTypesCountStack.clear()
-    FunctionDirectory.variableTypesCounter = -1
 
 def p_vars1(p):
     '''
@@ -357,26 +365,36 @@ def p_funciones4(p):
 
 def p_funciones5(p):
     '''
-    funciones5 : vars store_function OPENCURLY funciones6
-               | store_function OPENCURLY funciones6
+    funciones5 : vars funciones_punto1 OPENCURLY funciones6
+               | funciones_punto1 OPENCURLY funciones6
     '''
     print('funciones5')
 
 def p_funciones6(p):
     '''
     funciones6 : estatutos funciones6
-               | CLOSECURLY funciones
+               | CLOSECURLY funciones_punto2 funciones
     '''
     print('funciones6')
 
-def p_store_function(p):
+def p_funciones_punto1(p):
     '''
-    store_function : epsilon
+    funciones_punto1 : epsilon
     '''
-    print('store_function')
+    print('funciones_punto1')
+    FunctionDirectory.buildTables()
+    FunctionDirectory.variableTypesCountStack.clear()
+    FunctionDirectory.variableTypesCounter = -1
     FunctionDirectory.functionKinds.append('function')
-    FunctionDirectory.storeFunction()
+    FunctionDirectory.storeFunction(len(CodeGeneration.quadruples))
     FunctionDirectory.currentFunction = FunctionDirectory.functionIDs[-1]
+
+def p_funciones_punto2(p):
+    '''
+    funciones_punto2 : epsilon
+    '''
+    print('funciones_punto2')
+    CodeGeneration.quadruples.append(['endfunc', None, None, None])
 
 def p_parameters(p):
     '''
@@ -412,7 +430,7 @@ def p_estatutos1(p):
                | epsilon
     '''
     print('estatutos1')
-
+    
 def p_asignacion(p):
     '''
     asignacion : asignacion1 expresion SEMICOLON
@@ -439,13 +457,13 @@ def p_llamada(p):
 
 def p_funcion(p):
     '''
-    funcion : ID OPENPAR funcion1
+    funcion : funcion_punto1 OPENPAR funcion1 funcion_punto3
     '''
     print('funcion')
 
 def p_funcion1(p):
     '''
-    funcion1 : exp funcion2
+    funcion1 : exp funcion_punto2 funcion2
     '''
     print('funcion1')
 
@@ -455,6 +473,27 @@ def p_funcion2(p):
              | CLOSEPAR
     '''
     print('funcion2')
+
+def p_funcion_punto1(p):
+    '''
+    funcion_punto1 : ID
+    '''
+    print('funcion_punto1')
+    CodeGeneration.funcionPoint1(p[1], FunctionDirectory.functionDirectory)
+
+def p_funcion_punto2(p):
+    '''
+    funcion_punto2 : epsilon
+    '''
+    print('funcion_punto2')
+    CodeGeneration.funcionPoint2()
+
+def p_funcion_punto3(p):
+    '''
+    funcion_punto3 : epsilon
+    '''
+    print('funcion_punto3')
+    CodeGeneration.funcionPoint3()
 
 def p_retorno(p):
     '''
@@ -611,7 +650,6 @@ def p_for_punto3(p):
     '''
     print('for_punto3')
     CodeGeneration.forPoint3()
-
 
 def p_est_exp(p):
     '''
@@ -863,7 +901,8 @@ def p_epsilon(p):
     print('epsilon')
 
 def p_error(p):
-	print("PARSER ERROR: ", p)
+    print('PARSER ERROR: ', p)
+    exit()
 
 parser = yacc.yacc()
 
@@ -877,13 +916,13 @@ while True:
     except EOFError:
         break
     print('\n\n> ------------------------------------------------------------ <\n                      Analizador Semántico                      \n> ------------------------------------------------------------ <')
-    parser.parse(''.join(s).replace("\n", " "))
+    parser.parse(''.join(s).replace('\n', ' '))
     print('\n\n> ------------------------------------------------------------ <\n                  Directorio de Procedimientos                  \n> ------------------------------------------------------------ <')
     FunctionDirectory.printFunctionDirectory()
     print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
     SemanticCube.printSemanticCube()
-    print('\n> ------------------------------------------------------------ <\n                           Estatutos                            \n> ------------------------------------------------------------ <')
+    print('\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')
     print(CodeGeneration.operands)
     print(CodeGeneration.types)
     print(CodeGeneration.operators)
-    print(CodeGeneration.quadruples)
+    CodeGeneration.printQuadruples()
