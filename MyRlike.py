@@ -5,6 +5,7 @@ import FunctionDirectory
 import SemanticCube
 import CodeGeneration
 import VirtualMemory
+import json
 
 tokens = [
     'PROGRAM',
@@ -970,10 +971,15 @@ while True:
     VirtualMemory.resetMemory()
     try:
         path_to_file = input('>> ')
+        if (path_to_file[len(path_to_file)-4:] != '.txt'):
+            print('ERROR: Text file expected!')
+            continue
         with open(path_to_file) as file:
             s = file.readlines()
-    except EOFError:
-        break
+    except IOError:
+        print('ERROR: File does not exist!')
+        continue
+
     print('\n\n> ------------------------------------------------------------ <\n                      Analizador Semántico                      \n> ------------------------------------------------------------ <')
     parser.parse(''.join(s).replace('\n', ' '))
     print('\n\n> ------------------------------------------------------------ <\n                  Directorio de Procedimientos                  \n> ------------------------------------------------------------ <')
@@ -984,3 +990,8 @@ while True:
     VirtualMemory.printMemory()
     print('\n\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')
     CodeGeneration.printQuadruples()
+
+    data = {'functionDirectory': FunctionDirectory.functionDirectory, 'semanticCube': SemanticCube.semanticCube, 'emory': VirtualMemory.memory, 'quadruples': CodeGeneration.quadruples}
+    dataFile = open(path_to_file[:-4] + '.json', 'w')
+    json.dump(data, dataFile)
+    dataFile.close()
