@@ -17,7 +17,13 @@ functionParameterIndex = []
 
 extraOperator = ''
 
-def generateQuadruple(possibleOperators):
+def checkMemory(memory):
+    for i in range(15):
+        if (len(memory[i]) > 1000):
+            print('ERROR: Stack overflow!')
+            exit()
+
+def generateQuadruple(possibleOperators, memory):
     if (len(operators) > 0 and operators[-1] in possibleOperators):
         right_operand = operands.pop()
         right_type = types.pop()
@@ -30,11 +36,20 @@ def generateQuadruple(possibleOperators):
             print('ERROR: Types mismatch!')
             exit()
         else:
-            results.append('t' + str(len(results) + 1))
+            if (result_type == 'int'):
+                results.append(7000 + len(memory[6]))
+                memory[6][7000 + len(memory[6])] = None
+            elif (result_type == 'float'):
+                results.append(8000 + len(memory[7]))
+                memory[7][8000 + len(memory[7])] = None
+            elif (result_type == 'char'):
+                results.append(9000 + len(memory[8]))
+                memory[8][9000 + len(memory[8])] = None
+            checkMemory(memory)
             resultsTypes.append(result_type)
             quadruples.append([operator, left_operand, right_operand, results[-1]])
-            #print(quadruples)
-            return [results[-1], resultsTypes[-1]]
+            operands.append(results[-1])
+            types.append(resultsTypes[-1])
 
 def generateAssignment():
     if (len(operators) > 0 and operators[-1] == '='):
@@ -51,7 +66,6 @@ def generateAssignment():
         else:
         '''
         quadruples.append([operator, right_operand, None, left_operand])
-        #print(quadruples)
 
 def generateReturn(current_function_type):
     return_operand = operands.pop()
@@ -62,7 +76,6 @@ def generateReturn(current_function_type):
         exit()
     else:
         quadruples.append(['return', None, None, return_operand])
-        #print(quadruples)
 
 def generateInput():
     while(len(operators) > 0 and operators[-1] == 'read'):
@@ -70,16 +83,19 @@ def generateInput():
         read_operator = operators.pop()
 
         quadruples.append([read_operator, None, None, read_operand])
-        #print(quadruples)
 
 def generateOutput():
     while(len(operators) > 0 and operators[-1] == 'write'):
         write_operand = operands.pop()
-        types.pop()
+        write_size = 1
+        write_type = types.pop()
         write_operator = operators.pop()
 
-        quadruples.append([write_operator, None, None, write_operand])
-        #print(quadruples)
+        if (write_type == 'string'):
+            write_size = operands.pop()
+            quadruples.append([write_operator, write_size, None, write_operand])
+        else:
+            quadruples.append([write_operator, None, None, write_operand])
 
 def condicionPoint1():
     condition_operand = operands.pop()
@@ -87,15 +103,11 @@ def condicionPoint1():
 
     jumps.append(len(quadruples))
     quadruples.append(['gotof', condition_operand, None, None])
-    #print(quadruples)
-    #print(jumps)
 
 def condicionPoint2():
     gotof_index = jumps.pop()
 
     quadruples[gotof_index][3] = len(quadruples)
-    #print(quadruples)
-    #print(jumps)
 
 def condicionPoint3():
     gotof_index = jumps.pop()
@@ -103,20 +115,14 @@ def condicionPoint3():
     jumps.append(len(quadruples))
     quadruples.append(['goto', None, None, None])
     quadruples[gotof_index][3] = len(quadruples)
-    #print(quadruples)
-    #print(jumps)
 
 def condicionPoint4():
     goto_index = jumps.pop()
 
     quadruples[goto_index][3] = len(quadruples)
-    #print(quadruples)
-    #print(jumps)
 
 def whilePoint1():
     jumps.append(len(quadruples))
-    #print(quadruples)
-    #print(jumps)
 
 def whilePoint2():
     condition_operand = operands.pop()
@@ -124,8 +130,6 @@ def whilePoint2():
 
     jumps.append(len(quadruples))
     quadruples.append(['gotof', condition_operand, None, None])
-    #print(quadruples)
-    #print(jumps)
 
 def whilePoint3():
     gotof_index = jumps.pop()
@@ -133,8 +137,6 @@ def whilePoint3():
 
     quadruples.append(['goto', None, None, return_index])
     quadruples[gotof_index][3] = len(quadruples)
-    #print(quadruples)
-    #print(jumps)
 
 def forPoint1():
     if (types[-1] != 'int'):
@@ -149,14 +151,16 @@ def forPoint1():
     controlVariables.append(control_operand)
     quadruples.append(['=', exp_operand, None, controlVariables[-1]])
 
-def forPoint2():
+def forPoint2(memory):
     if (types[-1] != 'int'):
         print('ERROR: \'For\' expression is not of type integer!')
         exit()
     
     exp_operand = operands.pop()
     types.pop()
-    results.append('t' + str(len(results) + 1))
+    results.append(7000 + len(memory[6]))
+    memory[6][7000 + len(memory[6])] = None
+    checkMemory(memory)
     resultsTypes.append('int')
 
     jumps.append(len(quadruples))
@@ -166,6 +170,7 @@ def forPoint2():
 
 def forPoint3():
     quadruples.append(['+', controlVariables[-1], '1', controlVariables[-1]])
+    controlVariables.pop()
     end_index = jumps.pop()
     return_index = jumps.pop()
     quadruples.append(['goto', None, None, return_index])
@@ -194,6 +199,23 @@ def funcionPoint2():
 
 def funcionPoint3():
     quadruples.append(['gosub', functionNames.pop(), None, None])
+
+def arregloPoint1(arrayType, arrayAddress, arrayData, memory):
+    quadruples.append(['ver', arrayData[0], arrayData[1], arrayData[2]])
+    if (arrayType == 'int'):
+        results.append(10000 + len(memory[9]))
+        memory[9][10000 + len(memory[9])] = None
+    elif (arrayType == 'float'):
+        results.append(11000 + len(memory[10]))
+        memory[10][11000 + len(memory[10])] = None
+    elif (arrayType == 'char'):
+        results.append(12000 + len(memory[11]))
+        memory[11][12000 + len(memory[11])] = None
+    checkMemory(memory)
+    resultsTypes.append(arrayType)
+    quadruples.append(['+', arrayData[0], arrayAddress, results[-1]])
+    operands.append(results[-1])
+    types.append(resultsTypes[-1])
 
 def printQuadruples():
     for i in range(len(quadruples)):

@@ -6,7 +6,7 @@ function int f1()
 VARS
     char: var_c_1;
     int: var_i_2, var_i_3; {
-    return(var_c_1);
+    return(var_i_2);
 }
 
 main() {

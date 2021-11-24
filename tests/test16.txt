@@ -1,0 +1,9 @@
+Program MyRlike;
+VARS
+    int: a[10], b, c;
+
+main() {
+    c = 1;
+    b = 3;
+    a[4 + b] = c;
+}

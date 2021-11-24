@@ -4,6 +4,7 @@ import sys
 import FunctionDirectory
 import SemanticCube
 import CodeGeneration
+import VirtualMemory
 
 tokens = [
     'PROGRAM',
@@ -218,12 +219,13 @@ def p_programa1(p):
               | ID SEMICOLON
     '''
     print('programa1')
-    FunctionDirectory.buildTables()
+    FunctionDirectory.buildTables(VirtualMemory.memory)
     FunctionDirectory.variableTypesCountStack.clear()
     FunctionDirectory.variableTypesCounter = -1
     FunctionDirectory.functionIDs.append(p[1])
     FunctionDirectory.functionKinds.append('program')
     FunctionDirectory.storeFunction(len(CodeGeneration.quadruples))
+    FunctionDirectory.isGlobal = False
 
 def p_programa2(p):
     '''
@@ -253,6 +255,7 @@ def p_main(p):
     print('main')
     print(FunctionDirectory.functionIDs[0])
     FunctionDirectory.currentFunction = FunctionDirectory.functionIDs[0]
+    CodeGeneration.quadruples[0][3] = len(CodeGeneration.quadruples)
 
 def p_vars(p):
     '''
@@ -276,10 +279,14 @@ def p_vars2(p):
 
 def p_vars3(p):
     '''
-    vars3 : OPENBOX exp CLOSEBOX vars4
+    vars3 : OPENBOX INT CLOSEBOX vars4
           | vars4
     '''
     print('vars3')
+    if (p[1] == '['):
+        FunctionDirectory.variableSizesStack.append(p[2])
+    else:
+        FunctionDirectory.variableSizesStack.append(None)
 
 def p_vars4(p):
     '''
@@ -299,19 +306,36 @@ def p_vars5(p):
 
 def p_lista_ids(p):
     '''
-    lista_ids : ID OPENBOX exp CLOSEBOX lista_ids1
-              | ID lista_ids1
+    lista_ids : lista_ids1 lista_ids2
+              | ID lista_ids2
     '''
     print('lista_ids')
-    CodeGeneration.operands.append(p[1])
-    CodeGeneration.operators.append('read')
+    if (p[1] != None):
+        variableData = FunctionDirectory.getVariableData(p[1])
+        CodeGeneration.operands.append(variableData[1])
+        CodeGeneration.operators.append('read')
 
 def p_lista_ids1(p):
     '''
-    lista_ids1 : COMMA lista_ids
-               | epsilon
+    lista_ids1 : ID OPENBOX exp CLOSEBOX
     '''
     print('lista_ids1')
+    if (CodeGeneration.types.pop() != 'int'):
+        print('ERROR: Array size has to be of type integer!')
+        exit()
+    variableData = FunctionDirectory.getVariableData(p[1])
+    if (variableData[2] == None):
+        print('ERROR: Variable < ', p[1], ' > is not an array!')
+        exit()
+    arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
+    CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
+
+def p_lista_ids2(p):
+    '''
+    lista_ids2 : COMMA lista_ids
+               | epsilon
+    '''
+    print('lista_ids2')
 
 def p_tipo(p):
     '''
@@ -382,7 +406,7 @@ def p_funciones_punto1(p):
     funciones_punto1 : epsilon
     '''
     print('funciones_punto1')
-    FunctionDirectory.buildTables()
+    FunctionDirectory.buildTables(VirtualMemory.memory)
     FunctionDirectory.variableTypesCountStack.clear()
     FunctionDirectory.variableTypesCounter = -1
     FunctionDirectory.functionKinds.append('function')
@@ -395,6 +419,11 @@ def p_funciones_punto2(p):
     '''
     print('funciones_punto2')
     CodeGeneration.quadruples.append(['endfunc', None, None, None])
+    CodeGeneration.results.clear()
+    CodeGeneration.resultsTypes.clear()
+    VirtualMemory.memory[3].clear()
+    VirtualMemory.memory[4].clear()
+    VirtualMemory.memory[5].clear()
 
 def p_parameters(p):
     '''
@@ -444,9 +473,21 @@ def p_asignacion1(p):
                 | ID IS
     '''
     print('asignacion1')
-    if (p[2] == '='):
-        CodeGeneration.operands.append(p[1])
-        CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
+    if (len(p) > 3):
+        if (CodeGeneration.types.pop() != 'int'):
+            print('ERROR: Array size has to be of type integer!')
+            exit()
+        variableData = FunctionDirectory.getVariableData(p[1])
+        if (variableData[2] == None):
+            print('ERROR: Variable < ', p[1], ' > is not an array!')
+            exit()
+        arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
+        CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
+        CodeGeneration.operators.append(p[5])
+    else:
+        variableData = FunctionDirectory.getVariableData(p[1])
+        CodeGeneration.operands.append(variableData[1])
+        CodeGeneration.types.append(variableData[0])
         CodeGeneration.operators.append(p[2])
 
 def p_llamada(p):
@@ -534,7 +575,13 @@ def p_escritura_string(p):
     escritura_string : STRING
     '''
     print('escritura_string')
-    CodeGeneration.operands.append(p[1][1:-1])
+    string = p[1][1:-1]
+    stringSize = len(string)
+    stringAddress = VirtualMemory.storeConstant(string[0], 'char')
+    for char in string[1:]:
+        VirtualMemory.storeConstant(char, 'char')
+    CodeGeneration.operands.append(stringSize)
+    CodeGeneration.operands.append(stringAddress)
     CodeGeneration.types.append('string')
     CodeGeneration.operators.append('write')
     CodeGeneration.generateOutput()
@@ -627,8 +674,20 @@ def p_for1(p):
          | ID
     '''
     print('for1')
-    CodeGeneration.operands.append(p[1])
-    CodeGeneration.types.append('int')
+    if (len(p) > 2):
+        if (CodeGeneration.types.pop() != 'int'):
+            print('ERROR: Array size has to be of type integer!')
+            exit()
+        variableData = FunctionDirectory.getVariableData(p[1])
+        if (variableData[2] == None):
+            print('ERROR: Variable < ', p[1], ' > is not an array!')
+            exit()
+        arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
+        CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
+    else:
+        variableData = FunctionDirectory.getVariableData(p[1])
+        CodeGeneration.operands.append(variableData[1])
+        CodeGeneration.types.append(variableData[0])
 
 def p_for_punto1(p):
     '''
@@ -642,7 +701,7 @@ def p_for_punto2(p):
     for_punto2 : epsilon
     '''
     print('for_punto2')
-    CodeGeneration.forPoint2()
+    CodeGeneration.forPoint2(VirtualMemory.memory)
 
 def p_for_punto3(p):
     '''
@@ -678,10 +737,7 @@ def p_generate_expresion(p):
     generate_expresion : epsilon
     '''
     print('generate_expresion')
-    temp = CodeGeneration.generateQuadruple(['+', '-'])
-    if (temp != None):
-        CodeGeneration.operands.append(temp[0])
-        CodeGeneration.types.append(temp[1])
+    CodeGeneration.generateQuadruple(['||'], VirtualMemory.memory)
 
 def p_and(p):
     '''
@@ -702,10 +758,7 @@ def p_generate_and(p):
     generate_and : epsilon
     '''
     print('generate_and')
-    temp = CodeGeneration.generateQuadruple(['&&'])
-    if (temp != None):
-        CodeGeneration.operands.append(temp[0])
-        CodeGeneration.types.append(temp[1])
+    CodeGeneration.generateQuadruple(['&&'], VirtualMemory.memory)
 
 def p_equal(p):
     '''
@@ -727,10 +780,7 @@ def p_generate_equal(p):
     generate_equal : epsilon
     '''
     print('generate_equal')
-    temp = CodeGeneration.generateQuadruple(['==', '!='])
-    if (temp != None):
-        CodeGeneration.operands.append(temp[0])
-        CodeGeneration.types.append(temp[1])
+    CodeGeneration.generateQuadruple(['==', '!='], VirtualMemory.memory)
 
 def p_compare(p):
     '''
@@ -754,10 +804,7 @@ def p_generate_compare(p):
     generate_compare : epsilon
     '''
     print('generate_compare')
-    temp = CodeGeneration.generateQuadruple(['<', '<=', '>', '>='])
-    if (temp != None):
-        CodeGeneration.operands.append(temp[0])
-        CodeGeneration.types.append(temp[1])
+    CodeGeneration.generateQuadruple(['<', '<=', '>', '>='], VirtualMemory.memory)
 
 def p_exp(p):
     '''
@@ -779,10 +826,7 @@ def p_generate_exp(p):
     generate_exp : epsilon
     '''
     print('generate_exp')
-    temp = CodeGeneration.generateQuadruple(['+', '-'])
-    if (temp != None):
-        CodeGeneration.operands.append(temp[0])
-        CodeGeneration.types.append(temp[1])
+    CodeGeneration.generateQuadruple(['+', '-'], VirtualMemory.memory)
 
 def p_termino(p):
     '''
@@ -805,29 +849,37 @@ def p_generate_termino(p):
     generate_termino : epsilon
     '''
     print('generate_termino')
-    temp = CodeGeneration.generateQuadruple(['*', '/', '%'])
-    if (temp != None):
-        CodeGeneration.operands.append(temp[0])
-        CodeGeneration.types.append(temp[1])
+    CodeGeneration.generateQuadruple(['*', '/', '%'], VirtualMemory.memory)
 
 def p_factor(p):
     '''
-    factor : ID factor1
+    factor : factor1
            | openpar expresion closepar
            | funcion
            | factor2 varcte
     '''
     print('factor')
-    if (p[1] != '(' and p[1] != None):
-        CodeGeneration.operands.append(p[1])
-        CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
 
 def p_factor1(p):
     '''
-    factor1 : OPENBOX exp CLOSEBOX
-            | epsilon
+    factor1 : ID OPENBOX exp CLOSEBOX
+            | ID
     '''
     print('factor1')
+    if (len(p) > 2):
+        if (CodeGeneration.types.pop() != 'int'):
+            print('ERROR: Array size has to be of type integer!')
+            exit()
+        variableData = FunctionDirectory.getVariableData(p[1])
+        if (variableData[2] == None):
+            print('ERROR: Variable < ', p[1], ' > is not an array!')
+            exit()
+        arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
+        CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
+    else:
+        variableData = FunctionDirectory.getVariableData(p[1])
+        CodeGeneration.operands.append(variableData[1])
+        CodeGeneration.types.append(variableData[0])
 
 def p_factor2(p):
     '''
@@ -866,15 +918,18 @@ def p_varcte(p):
     '''
     print('varcte')
     if (p[1] != None):
-        CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
-        CodeGeneration.types.append(FunctionDirectory.getVariableType(p[1]))
+        #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+        variableData = FunctionDirectory.getVariableData(p[1])
+        CodeGeneration.operands.append(variableData[1])
+        CodeGeneration.types.append(variableData[0])
 
 def p_int(p):
     '''
     int : INT
     '''
     print('int')
-    CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'int'))
     CodeGeneration.types.append('int')
 
 def p_float(p):
@@ -882,7 +937,8 @@ def p_float(p):
     float : FLOAT
     '''
     print('float')
-    CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'float'))
     CodeGeneration.types.append('float')
 
 def p_char(p):
@@ -890,7 +946,8 @@ def p_char(p):
     char : CHAR
     '''
     print('char')
-    CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
+    CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'char'))
     CodeGeneration.types.append('char')
 
 
@@ -909,6 +966,7 @@ parser = yacc.yacc()
 while True:
     FunctionDirectory.resetFunctionDirectory()
     CodeGeneration.resetCodeGeneration()
+    VirtualMemory.resetMemory()
     try:
         path_to_file = input('>> ')
         with open(path_to_file) as file:
@@ -921,8 +979,7 @@ while True:
     FunctionDirectory.printFunctionDirectory()
     print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
     SemanticCube.printSemanticCube()
-    print('\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')
-    print(CodeGeneration.operands)
-    print(CodeGeneration.types)
-    print(CodeGeneration.operators)
+    print('\n> ------------------------------------------------------------ <\n                         Memoria Virtual                        \n> ------------------------------------------------------------ <')
+    VirtualMemory.printMemory()
+    print('\n\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')
     CodeGeneration.printQuadruples()

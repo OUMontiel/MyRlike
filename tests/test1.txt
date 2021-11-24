@@ -1,12 +1,12 @@
 Program MyRlike;
 VARS
-    int: i, j, p, arreglo[10];
+    int: i, j, arreglo[10], p;
     float: valor;
 
 function char f1(char par_c_1, float par_f_2)
 VARS
-    char: var_c_1;
-    int: var_i_2, var_i_3; {
+    char: var_c_1, var_c_2;
+    int: var_i_2, var_i_3, var_i_4; {
     i = j + (p - j * 2 + j);
     if (j == 1) then {
         return(par_c_1);
@@ -46,7 +46,7 @@ main() {
     }
     p = 5;
     while (i > 0) do {
-        calcula(p - i);
+        f2(valor);
         j = 4;
         i = i + 1;
     }
