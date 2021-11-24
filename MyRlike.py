@@ -505,6 +505,7 @@ def p_funcion(p):
 def p_funcion1(p):
     '''
     funcion1 : exp funcion_punto2 funcion2
+             | CLOSEPAR
     '''
     print('funcion1')
 
@@ -534,7 +535,7 @@ def p_funcion_punto3(p):
     funcion_punto3 : epsilon
     '''
     print('funcion_punto3')
-    CodeGeneration.funcionPoint3()
+    CodeGeneration.funcionPoint3(FunctionDirectory.functionDirectory, VirtualMemory.memory)
 
 def p_retorno(p):
     '''

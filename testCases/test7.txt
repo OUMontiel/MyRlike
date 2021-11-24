@@ -1,0 +1,31 @@
+Program MyRlike;
+VARS
+    int: arreglo1[5], arreglo2[5], arreglo3[5], n, i;
+
+function void multiply() {
+    for i = 0 to n do {
+        arreglo3[i] = arreglo1[i] * arreglo2[i];
+    }
+}
+
+main() {
+    n = 5;
+
+    arreglo1[0] = 7;
+    arreglo1[1] = 3;
+    arreglo1[2] = 5;
+    arreglo1[3] = 9;
+    arreglo1[4] = 1;
+
+    arreglo2[0] = 4;
+    arreglo2[1] = 8;
+    arreglo2[2] = 2;
+    arreglo2[3] = 6;
+    arreglo2[4] = 10;
+
+    multiply();
+
+    for i = 0 to n do {
+        write(arreglo3[i]);
+    }
+}

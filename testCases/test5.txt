@@ -1,0 +1,37 @@
+Program MyRlike;
+VARS
+    int: arreglo[10], n, i, j;
+
+function void sort()
+VARS
+    int: temp; {
+    for i = 0 to n - 1 do {
+        for j = 0 to n - i - 1 do {
+            if (arreglo[j] > arreglo[j + 1]) then {
+                temp = arreglo[j];
+                arreglo[j] = arreglo[j + 1];
+                arreglo[j + 1] = temp;
+            }
+        }
+    }
+}
+
+main() {
+    n = 10;
+    arreglo[0] = 52;
+    arreglo[1] = 36;
+    arreglo[2] = 85;
+    arreglo[3] = 12;
+    arreglo[4] = 48;
+    arreglo[5] = 96;
+    arreglo[6] = 35;
+    arreglo[7] = 31;
+    arreglo[8] = 28;
+    arreglo[9] = 95;
+
+    sort();
+
+    for i = 0 to n do {
+        write(arreglo[i]);
+    }
+}

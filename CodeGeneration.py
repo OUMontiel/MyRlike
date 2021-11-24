@@ -197,8 +197,24 @@ def funcionPoint2():
         functionParameterIndex[-1] = functionParameterIndex[-1] + 1
         quadruples.append(['param', parameter_name, None, 'param' + str(functionParameterIndex[-1])])
 
-def funcionPoint3():
-    quadruples.append(['gosub', functionNames.pop(), None, None])
+def funcionPoint3(functionDirectory, memory):
+    quadruples.append(['gosub', functionNames[-1], None, None])
+    functionType = functionDirectory[functionNames[-1]][0]
+    if (functionType != 'void'):
+        if (functionType == 'int'):
+            results.append(7000 + len(memory[6]))
+            memory[6][7000 + len(memory[6])] = None
+        elif (functionType == 'float'):
+            results.append(8000 + len(memory[7]))
+            memory[7][8000 + len(memory[7])] = None
+        elif (functionType == 'char'):
+            results.append(9000 + len(memory[8]))
+            memory[8][9000 + len(memory[8])] = None
+        checkMemory(memory)
+        resultsTypes.append(functionType)
+        quadruples.append(['=', functionNames.pop(), None, results[-1]])
+        operands.append(results[-1])
+        types.append(resultsTypes[-1])
 
 def arregloPoint1(arrayType, arrayAddress, arrayData, memory):
     quadruples.append(['ver', arrayData[0], arrayData[1], arrayData[2]])
