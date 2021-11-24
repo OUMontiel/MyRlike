@@ -24,6 +24,9 @@ def checkMemory(memory):
             exit()
 
 def generateQuadruple(possibleOperators, memory):
+    print('heyoooooooooooooooooooooooooooooo')
+    print(memory)
+    print(results)
     if (len(operators) > 0 and operators[-1] in possibleOperators):
         right_operand = operands.pop()
         right_type = types.pop()

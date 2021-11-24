@@ -213,6 +213,10 @@ def p_programa(p):
     '''
     print('programa')
     CodeGeneration.quadruples.append(['end', None, None, None])
+    VirtualMemory.memory[0].clear()
+    VirtualMemory.memory[1].clear()
+    VirtualMemory.memory[2].clear()
+    VirtualMemory.eraseLocal()
 
 def p_programa1(p):
     '''
@@ -422,9 +426,7 @@ def p_funciones_punto2(p):
     CodeGeneration.quadruples.append(['endfunc', None, None, None])
     CodeGeneration.results.clear()
     CodeGeneration.resultsTypes.clear()
-    VirtualMemory.memory[3].clear()
-    VirtualMemory.memory[4].clear()
-    VirtualMemory.memory[5].clear()
+    VirtualMemory.eraseLocal()
 
 def p_parameters(p):
     '''
@@ -991,7 +993,7 @@ while True:
     print('\n\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')
     CodeGeneration.printQuadruples()
 
-    data = {'functionDirectory': FunctionDirectory.functionDirectory, 'semanticCube': SemanticCube.semanticCube, 'emory': VirtualMemory.memory, 'quadruples': CodeGeneration.quadruples}
+    data = {'functionDirectory': FunctionDirectory.functionDirectory, 'semanticCube': SemanticCube.semanticCube, 'memory': VirtualMemory.memory, 'quadruples': CodeGeneration.quadruples}
     dataFile = open(path_to_file[:-4] + '.json', 'w')
     json.dump(data, dataFile)
     dataFile.close()

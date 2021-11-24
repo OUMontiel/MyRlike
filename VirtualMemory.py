@@ -1,5 +1,9 @@
 memory = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
 
+def eraseLocal():
+    for i in range(3, 12):
+        memory[i].clear()
+
 def storeConstant(constant, type):
     if (type == 'int'):
         if (len(memory[12]) == 1000):
