@@ -1,5 +1,9 @@
 import json
 
+'''
+generateGlobalMemory()
+    Crea una instancia de memoria global
+'''
 def generateGlobalMemory():
     globalMemory = [{}, {}, {}]
     for i in range(3):
@@ -7,6 +11,10 @@ def generateGlobalMemory():
             globalMemory[i][1000 * (i + 1) + j] = None
     return globalMemory
 
+'''
+generateLocalMemory()
+    Crea una instancia de memoria local
+'''
 def generateLocalMemory():
     localMemory = [{}, {}, {}]
     for i in range(3):
@@ -14,6 +22,10 @@ def generateLocalMemory():
             localMemory[i][3000 + 1000 * (i + 1) + j] = None
     return localMemory
 
+'''
+generateTemporalMemory()
+    Crea una instancia de memoria de temporales
+'''
 def generateTemporalMemory():
     temporalMemory = [{}, {}, {}]
     for i in range(3):
@@ -21,6 +33,10 @@ def generateTemporalMemory():
             temporalMemory[i][6000 + 1000 * (i + 1) + j] = None
     return temporalMemory
 
+'''
+generateTemporalPointerMemory()
+    Crea una instancia de memoria de temporales para pointers
+'''
 def generateTemporalPointerMemory():
     temporalPointerMemory = [{}, {}, {}]
     for i in range(3):
@@ -28,6 +44,10 @@ def generateTemporalPointerMemory():
             temporalPointerMemory[i][9000 + 1000 * (i + 1) + j] = None
     return temporalPointerMemory
 
+'''
+generateConstantMemory()
+    Crea una instancia de memoria de constantes
+'''
 def generateConstantMemory():
     constantMemory = [{}, {}, {}]
     for i in range(3):
@@ -35,6 +55,12 @@ def generateConstantMemory():
             constantMemory[i][12000 + 1000 * (i + 1) + j] = None
     return constantMemory
 
+'''
+storeConstants()
+constantMemory = instancia de memoria de constantes
+memory = la memoria que proviene del compilador
+    Pasa los valores de las constantes guardadas en el compilador a la memoria de la máquina virtual
+'''
 def storeConstants(constantMemory, memory):
     for address, content in memory[12].items():
         constantMemory[0][int(address)] = content
@@ -44,6 +70,12 @@ def storeConstants(constantMemory, memory):
         constantMemory[2][int(address)] = content
     return constantMemory
 
+'''
+getContent()
+address = dirección de memoria
+virtualMemory = la memoria de la máquina virtual
+    Regresa el valor que se encuentra dentro de la dirección en la máquina virtual
+'''
 def getContent(address, virtualMemory):
     if (address >= 1000 and address <= 3999):
         return virtualMemory[0][(address // 1000 + 2) % 3][address]
@@ -56,6 +88,13 @@ def getContent(address, virtualMemory):
     elif (address >= 13000 and address <= 15999):
         return virtualMemory[4][(address // 1000 + 2) % 3][address]
 
+'''
+setContent()
+value = valor que se desea guardar
+address = dirección de memoria
+virtualMemory = la memoria de la máquina virtual
+    Se guarda el valor dentro de la dirección en la máquina virtual
+'''
 def setContent(value, address, virtualMemory):
     if (address >= 1000 and address <= 3999):
         virtualMemory[0][(address // 1000 + 2) % 3][address] = value
@@ -68,6 +107,11 @@ def setContent(value, address, virtualMemory):
     elif (address >= 13000 and address <= 15999):
         virtualMemory[4][(address // 1000 + 2) % 3][address] = value
 
+'''
+getType()
+address = dirección de memoria
+    Regresa el tipo de dato basado en la dirección de memoria
+'''
 def getType(address):
     if (address // 1000 % 3 == 1):
         return 'int'
@@ -76,6 +120,12 @@ def getType(address):
     else:
         return 'char'
 
+'''
+runAssignment()
+quadruple = cuádruplo de asignación que se correrá
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de asignación
+'''
 def runAssignment(quadruple, virtualMemory):
     right_operand = getContent(quadruple[1], virtualMemory)
     if (right_operand == None):
@@ -83,6 +133,12 @@ def runAssignment(quadruple, virtualMemory):
         exit()
     setContent(right_operand, quadruple[3], virtualMemory)
 
+'''
+runExpression()
+quadruple = cuádruplo de una expresión que se correrá
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de la expresión
+'''
 def runExpression(quadruple, virtualMemory):
     left_type = getType(quadruple[1])
     right_type = getType(quadruple[2])
@@ -94,6 +150,15 @@ def runExpression(quadruple, virtualMemory):
     value = calculateExpression(quadruple[0], left_operand, right_operand, left_type, right_type)
     setContent(value, quadruple[3], virtualMemory)
 
+'''
+calculateExpression()
+operator = operador de la expresión
+left_operand = operando izquiero de la expresión
+right_operand = operando derecho de la expresión
+left_type = tipo de dato del operando izquierdo
+right_type = tipo de dato del operando derecho
+    Calcula la expresión y regresa el valor resultante
+'''
 def calculateExpression(operator, left_operand, right_operand, left_type, right_type):
     if (operator == '||'):
         return 1 if left_operand or right_operand else 0
@@ -181,6 +246,7 @@ def runProgram(functionDirectory, semanticCube, memory, quadruples):
             runExpression(quadruple, virtualMemory)
             quadruplePointer += 1
 
+# Ejecutar el programa de un archivo introducido por el usuario
 while True:
     try:
         path_to_file = input('>> ')
