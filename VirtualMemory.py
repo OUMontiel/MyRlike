@@ -1,9 +1,19 @@
 memory = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
 
+'''
+eraseLocal()
+    Borra variables locales y temporales
+'''
 def eraseLocal():
     for i in range(3, 12):
         memory[i].clear()
 
+'''
+storeConstant()
+constant = el valor de una constante que se va a guardar en memoria virutal
+type = el tipo de dato de la constante
+    Guarda la constante en la memoria virtual
+'''
 def storeConstant(constant, type):
     if (type == 'int'):
         if (len(memory[12]) == 1000):
@@ -24,6 +34,11 @@ def storeConstant(constant, type):
         memory[14][15000 + len(memory[14])] = constant
         return 15000 + len(memory[14]) - 1
 
+'''
+getContent()
+address = la dirección de memoria que se quiere accesar
+    Regresa el contenido en la dirección especificada de la memoria virtual
+'''
 def getContent(address):
     if address in memory[0]:
         return memory[0][address]
@@ -43,12 +58,32 @@ def getContent(address):
         return memory[7][address]
     elif address in memory[8]:
         return memory[8][address]
+    elif address in memory[9]:
+        return memory[9][address]
+    elif address in memory[10]:
+        return memory[10][address]
+    elif address in memory[11]:
+        return memory[11][address]
+    elif address in memory[12]:
+        return memory[12][address]
+    elif address in memory[13]:
+        return memory[13][address]
+    elif address in memory[14]:
+        return memory[14][address]
 
+'''
+printMemory()
+    Imprime la memoria virtual en consola
+'''
 def printMemory():
     for stack in memory:
         for index in stack:
             print(index, ' : ', stack[index])
 
+'''
+resetMemory():
+    Reinicia la memoria virtual borrando todos sus contenidos
+'''
 def resetMemory():
-    for i in range(12):
+    for i in range(15):
         memory[i].clear()

@@ -17,12 +17,23 @@ functionParameterIndex = []
 
 extraOperator = ''
 
+'''
+checkMemory()
+memory = la memoria virtual
+    Revisa que no se haya acabado la memoria
+'''
 def checkMemory(memory):
     for i in range(15):
         if (len(memory[i]) > 1000):
             print('ERROR: Stack overflow!')
             exit()
 
+'''
+generateQuadruple()
+possibleOperators = los operadores que pueden ir en este cuádruplo
+memory = la memoria virtual
+    Genera un cuádruplo de una expresión
+'''
 def generateQuadruple(possibleOperators, memory):
     if (len(operators) > 0 and operators[-1] in possibleOperators):
         right_operand = operands.pop()
@@ -36,6 +47,7 @@ def generateQuadruple(possibleOperators, memory):
             print('ERROR: Types mismatch!')
             exit()
         else:
+            # Genera variable temporal
             if (result_type == 'int'):
                 results.append(7000 + len(memory[6]))
                 memory[6][7000 + len(memory[6])] = None
@@ -51,6 +63,10 @@ def generateQuadruple(possibleOperators, memory):
             operands.append(results[-1])
             types.append(resultsTypes[-1])
 
+'''
+generateAssignment()
+    Genera un cuádruplo de una asignación
+'''
 def generateAssignment():
     if (len(operators) > 0 and operators[-1] == '='):
         right_operand = operands.pop()
@@ -61,6 +77,10 @@ def generateAssignment():
 
         quadruples.append([operator, right_operand, None, left_operand])
 
+'''
+generateReturn()
+    Genera un cuádruplo de un retorno
+'''
 def generateReturn(current_function_type):
     return_operand = operands.pop()
     return_type = types.pop()
@@ -71,6 +91,10 @@ def generateReturn(current_function_type):
     else:
         quadruples.append(['return', None, None, return_operand])
 
+'''
+generateInput()
+    Genera un cuádruplo de una lectura
+'''
 def generateInput():
     while(len(operators) > 0 and operators[-1] == 'read'):
         read_operand = operands.pop()
@@ -79,6 +103,10 @@ def generateInput():
 
         quadruples.append([read_operator, None, None, read_operand])
 
+'''
+generatOutput()
+    Genera un cuádruplo de una escritura
+'''
 def generateOutput():
     while(len(operators) > 0 and operators[-1] == 'write'):
         write_operand = operands.pop()
@@ -91,7 +119,10 @@ def generateOutput():
             quadruples.append([write_operator, write_size, None, write_operand])
         else:
             quadruples.append([write_operator, None, None, write_operand])
-
+'''
+condicionPoint1()
+    Primer punto neurálgico de estatuto condicional if
+'''
 def condicionPoint1():
     condition_operand = operands.pop()
     types.pop()
@@ -99,11 +130,19 @@ def condicionPoint1():
     jumps.append(len(quadruples))
     quadruples.append(['gotof', condition_operand, None, None])
 
+'''
+condicionPoint2()
+    Segundo punto neurálgico de estatuto condicional if
+'''
 def condicionPoint2():
     gotof_index = jumps.pop()
 
     quadruples[gotof_index][3] = len(quadruples)
 
+'''
+condicionPoint3()
+    Tercer punto neurálgico de estatuto condicional if
+'''
 def condicionPoint3():
     gotof_index = jumps.pop()
 
@@ -111,14 +150,26 @@ def condicionPoint3():
     quadruples.append(['goto', None, None, None])
     quadruples[gotof_index][3] = len(quadruples)
 
+'''
+condicionPoint4()
+    Cuarto punto neurálgico de estatuto condicional if
+'''
 def condicionPoint4():
     goto_index = jumps.pop()
 
     quadruples[goto_index][3] = len(quadruples)
 
+'''
+whilePoint1()
+    Primer punto neurálgico de estatuto condicional while
+'''
 def whilePoint1():
     jumps.append(len(quadruples))
 
+'''
+whilePoint2()
+    Segundo punto neurálgico de estatuto condicional while
+'''
 def whilePoint2():
     condition_operand = operands.pop()
     types.pop()
@@ -126,6 +177,10 @@ def whilePoint2():
     jumps.append(len(quadruples))
     quadruples.append(['gotof', condition_operand, None, None])
 
+'''
+whilePoint3()
+    Tercer punto neurálgico de estatuto condicional while
+'''
 def whilePoint3():
     gotof_index = jumps.pop()
     return_index = jumps.pop()
@@ -133,6 +188,10 @@ def whilePoint3():
     quadruples.append(['goto', None, None, return_index])
     quadruples[gotof_index][3] = len(quadruples)
 
+'''
+forPoint1()
+    Primer punto neurálgico de estatuto condicional for
+'''
 def forPoint1():
     if (types[-1] != 'int'):
         print('ERROR: \'For\' expression is not of type integer!')
@@ -146,6 +205,10 @@ def forPoint1():
     controlVariables.append(control_operand)
     quadruples.append(['=', exp_operand, None, controlVariables[-1]])
 
+'''
+forPoint2()
+    Segundo punto neurálgico de estatuto condicional for
+'''
 def forPoint2(memory):
     if (types[-1] != 'int'):
         print('ERROR: \'For\' expression is not of type integer!')
@@ -163,6 +226,10 @@ def forPoint2(memory):
     jumps.append(len(quadruples))
     quadruples.append(['gotof', results[-1], None, None])
 
+'''
+forPoint3()
+    Tercer punto neurálgico de estatuto condicional for
+'''
 def forPoint3():
     quadruples.append(['+', controlVariables[-1], '1', controlVariables[-1]])
     controlVariables.pop()
@@ -171,6 +238,10 @@ def forPoint3():
     quadruples.append(['goto', None, None, return_index])
     quadruples[end_index][3] = len(quadruples)
 
+'''
+funcionPoint1()
+    Primer punto neurálgico de estatuto modular
+'''
 def funcionPoint1(functionName, functionDirectory):
     if (functionName in functionDirectory):
         quadruples.append(['era', functionName, None, None])
@@ -181,6 +252,10 @@ def funcionPoint1(functionName, functionDirectory):
         print('ERROR: Function < ', functionName, ' > does not exist!')
         exit()
 
+'''
+funcionPoint2()
+    Segundo punto neurálgico de estatuto modular
+'''
 def funcionPoint2():
     parameter_name = operands.pop()
     parameter_type = types.pop()
@@ -192,10 +267,15 @@ def funcionPoint2():
         functionParameterIndex[-1] = functionParameterIndex[-1] + 1
         quadruples.append(['param', parameter_name, None, 'param' + str(functionParameterIndex[-1])])
 
+'''
+funcionPoint3()
+    Tercer punto neurálgico de estatuto modular
+'''
 def funcionPoint3(functionDirectory, memory):
     quadruples.append(['gosub', functionNames[-1], None, None])
     functionType = functionDirectory[functionNames[-1]][0]
     if (functionType != 'void'):
+        # Genera variable temporal
         if (functionType == 'int'):
             results.append(7000 + len(memory[6]))
             memory[6][7000 + len(memory[6])] = None
@@ -211,8 +291,13 @@ def funcionPoint3(functionDirectory, memory):
         operands.append(results[-1])
         types.append(resultsTypes[-1])
 
+'''
+arregloPoint1()
+    Primer punto neurálgico de arreglos
+'''
 def arregloPoint1(arrayType, arrayAddress, arrayData, memory):
     quadruples.append(['ver', arrayData[0], arrayData[1], arrayData[2]])
+    # Genera memoria de apuntador
     if (arrayType == 'int'):
         results.append(10000 + len(memory[9]))
         memory[9][10000 + len(memory[9])] = None
@@ -228,10 +313,18 @@ def arregloPoint1(arrayType, arrayAddress, arrayData, memory):
     operands.append(results[-1])
     types.append(resultsTypes[-1])
 
+'''
+printQuadruples()
+    Imprime en consola los cuádruplos y sus índices
+'''
 def printQuadruples():
     for i in range(len(quadruples)):
         print(f'{str(i):>4}', ': ', quadruples[i])
 
+'''
+resetCodeGeneration()
+    Reinicia todas las estructuras de datos para un nuevo programa
+'''
 def resetCodeGeneration():
     quadruples.clear()
     operators.clear()

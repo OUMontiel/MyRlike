@@ -56,12 +56,20 @@ semanticCube = [[
                  ['int', 'int', 'int', 'int', 'int', 'int', 'int', 'int', 'char', 'char', 'char', 'char', 'char']
                 ]]
 
+'''
+printDivider()
+    Imprime líneas divisoras para las tablas del cubo semántico
+'''
 def printDivider():
     print('|', end = '')
     for i in range(14):
         print('-------|', end = '')
     print()
 
+'''
+printSemanticCube()
+    Imprime en consola el cubo semántico separado en tres tablas
+'''
 def printSemanticCube():
     for type1 in Types:
         print('|---------------------------------------------------------------------------------------------------------------|')
