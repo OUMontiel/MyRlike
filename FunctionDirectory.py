@@ -106,9 +106,8 @@ def buildTables(memory):
     typesStack.clear()
 
 def storeFunction(address):
-    print(functionIDs[-1])
     if(functionIDs[-1] in functionDirectory):
-        print('ERROR: Function name already exists!')
+        print('ERROR: Function name <', functionIDs[-1], '> already exists!')
         exit()
     else:
         functionDirectory[functionIDs[-1]] = [functionTypes[-1], functionKinds[-1], address, parametersTables[-1], variablesTables[-1]]

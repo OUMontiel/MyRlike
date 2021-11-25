@@ -24,9 +24,6 @@ def checkMemory(memory):
             exit()
 
 def generateQuadruple(possibleOperators, memory):
-    print('heyoooooooooooooooooooooooooooooo')
-    print(memory)
-    print(results)
     if (len(operators) > 0 and operators[-1] in possibleOperators):
         right_operand = operands.pop()
         right_type = types.pop()
@@ -62,12 +59,6 @@ def generateAssignment():
         left_type = types.pop()
         operator = operators.pop()
 
-        '''
-        if (left_type != right_type):
-            print('ERROR: Types mismatch!')
-            exit()
-        else:
-        '''
         quadruples.append([operator, right_operand, None, left_operand])
 
 def generateReturn(current_function_type):
@@ -83,6 +74,7 @@ def generateReturn(current_function_type):
 def generateInput():
     while(len(operators) > 0 and operators[-1] == 'read'):
         read_operand = operands.pop()
+        types.pop()
         read_operator = operators.pop()
 
         quadruples.append([read_operator, None, None, read_operand])

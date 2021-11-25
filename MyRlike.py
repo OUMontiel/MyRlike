@@ -1,11 +1,11 @@
 import ply.lex as lex
 import ply.yacc as yacc
 import sys
+import json
 import FunctionDirectory
 import SemanticCube
 import CodeGeneration
 import VirtualMemory
-import json
 
 tokens = [
     'PROGRAM',
@@ -258,8 +258,8 @@ def p_main(p):
     main : MAIN
     '''
     print('main')
-    print(FunctionDirectory.functionIDs[0])
     FunctionDirectory.currentFunction = FunctionDirectory.functionIDs[0]
+    FunctionDirectory.functionDirectory[FunctionDirectory.currentFunction][2] = len(CodeGeneration.quadruples)
     CodeGeneration.quadruples[0][3] = len(CodeGeneration.quadruples)
 
 def p_vars(p):
@@ -318,6 +318,7 @@ def p_lista_ids(p):
     if (p[1] != None):
         variableData = FunctionDirectory.getVariableData(p[1])
         CodeGeneration.operands.append(variableData[1])
+        CodeGeneration.types.append(variableData[0])
         CodeGeneration.operators.append('read')
 
 def p_lista_ids1(p):
@@ -334,6 +335,7 @@ def p_lista_ids1(p):
         exit()
     arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
     CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
+    CodeGeneration.operators.append('read')
 
 def p_lista_ids2(p):
     '''

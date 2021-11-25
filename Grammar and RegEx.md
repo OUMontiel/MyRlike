@@ -66,5 +66,5 @@ VARCTE → id | cte-l | cte-f | cte-c
 | int | `\d+` |
 | float | `\d+\.\d+` |
 | char | `\'([^\\\']\|(\\\')\|(\\\\))?\'` |
-| strings | `\"([^\\\"]\|(\\\")\|(\\\\))*\"` |
+| string | `\"([^\\\"]\|(\\\")\|(\\\\))*\"` |
 | constants | `{‘program’, ‘main()’, ‘VARS’, ‘function’, ‘return’, ‘read’, ‘write’, ‘if’, ‘then’, ‘else’, ‘while’, ‘do’, ‘for’, ‘to’, ‘int’, ‘float’, ‘char’, ‘void’, ‘;’, ‘:’, ‘,’, ‘{‘, ‘}’, ‘[‘, ‘]’, ‘(‘, ‘)’, ‘=’, ‘\|\|’, ‘&&’, ‘==’, ‘!=’, ‘<’, ‘<=’, ‘>’, ‘>=’, ‘*’, ‘/’, ‘%’, ‘+’, ‘-’}` |
