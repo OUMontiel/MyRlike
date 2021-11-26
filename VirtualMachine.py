@@ -401,12 +401,11 @@ def calculateExpression(operator, left_operand, right_operand, left_type, right_
 '''
 runProgram()
 functionDirectory = directorio de funcionamiento generado por el compilador
-semanticCube = la tabla de consideraciones semánticas
 memory = la memoria que proviene del compilador
 quadruples = la lista de cuádruplos generados por el compilador
     Corre el programa ejecutando los cuádruplos
 '''
-def runProgram(functionDirectory, semanticCube, memory, quadruples):
+def runProgram(functionDirectory, memory, quadruples):
     globalMemory = generateGlobalMemory()
     localMemory = [generateLocalMemory()]
     temporalMemory = [generateTemporalMemory()]
@@ -425,7 +424,6 @@ def runProgram(functionDirectory, semanticCube, memory, quadruples):
     quadruplePointer = 0
     while True:
         quadruple = quadruples[quadruplePointer]
-        print(quadruple)
         if (quadruple[0] == '='):
             quadruplePointer = runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable)
         elif (quadruple[0] == 'return'):
@@ -467,10 +465,7 @@ while True:
         continue
     
     functionDirectory = data['functionDirectory']
-    semanticCube = data['semanticCube']
     memory = data['memory']
     quadruples = data['quadruples']
-    #for i in range(len(quadruples)):
-    #    print(f'{str(i):>4}', ': ', quadruples[i])
-    runProgram(functionDirectory, semanticCube, memory, quadruples)
+    runProgram(functionDirectory, memory, quadruples)
     

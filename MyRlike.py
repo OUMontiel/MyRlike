@@ -472,7 +472,6 @@ def p_asignacion(p):
     asignacion : asignacion1 expresion SEMICOLON
     '''
     print('asignacion')
-    print('heeeeeeeeereeeeeeeeeeeeeeeeee')
     CodeGeneration.generateAssignment()
 
 def p_asignacion1(p):
@@ -828,7 +827,6 @@ def p_exp1(p):
          | MINUS
     '''
     print('exp1')
-    print('heeeeeeeeeeeeeeeeey -> 32')
     CodeGeneration.operators.append(p[1])
 
 def p_generate_exp(p):
@@ -836,7 +834,6 @@ def p_generate_exp(p):
     generate_exp : epsilon
     '''
     print('generate_exp')
-    print('heeeeeeeeeeeeeeeeey -> 33')
     CodeGeneration.generateQuadruple(['+', '-'], VirtualMemory.memory)
 
 def p_termino(p):
@@ -878,7 +875,6 @@ def p_factor1(p):
     '''
     print('factor1')
     if (len(p) > 2):
-        print('hooooooooooooooooooy -> 37 -> ', p[1], p[2], p[3], p[4])
         if (CodeGeneration.types.pop() != 'int'):
             print('ERROR: Array size has to be of type integer!')
             exit()
@@ -889,7 +885,6 @@ def p_factor1(p):
         arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
         CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
     else:
-        print('hooooooooooooooooooy -> 37 -> ', p[1])
         variableData = FunctionDirectory.getVariableData(p[1])
         CodeGeneration.operands.append(variableData[1])
         CodeGeneration.types.append(variableData[0])
@@ -989,14 +984,14 @@ while True:
     parser.parse(''.join(s).replace('\n', ' '))
     print('\n\n> ------------------------------------------------------------ <\n                  Directorio de Procedimientos                  \n> ------------------------------------------------------------ <')
     FunctionDirectory.printFunctionDirectory()
-    #print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
-    #SemanticCube.printSemanticCube()
+    print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
+    SemanticCube.printSemanticCube()
     print('\n> ------------------------------------------------------------ <\n                         Memoria Virtual                        \n> ------------------------------------------------------------ <')
     VirtualMemory.printMemory()
     print('\n\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')
     CodeGeneration.printQuadruples()
 
-    data = {'functionDirectory': FunctionDirectory.functionDirectory, 'semanticCube': SemanticCube.semanticCube, 'memory': VirtualMemory.memory, 'quadruples': CodeGeneration.quadruples}
+    data = {'functionDirectory': FunctionDirectory.functionDirectory, 'memory': VirtualMemory.memory, 'quadruples': CodeGeneration.quadruples}
     dataFile = open(path_to_file[:-4] + '.json', 'w')
     json.dump(data, dataFile)
     dataFile.close()
