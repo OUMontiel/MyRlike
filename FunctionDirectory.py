@@ -130,7 +130,7 @@ def storeFunction(address):
         print('ERROR: Function name <', functionIDs[-1], '> already exists!')
         exit()
     else:
-        functionDirectory[functionIDs[-1]] = [functionTypes[-1], functionKinds[-1], address, parametersTables[-1], variablesTables[-1]]
+        functionDirectory[functionIDs[-1]] = [functionTypes[-1], functionKinds[-1], address, None, parametersTables[-1], variablesTables[-1]]
 
 '''
 getVariableData()
@@ -140,14 +140,14 @@ variable = nombre de la variable cuya información se quiere accesar
 def getVariableData(variable):
     if (currentFunction in functionDirectory):
         currentVariablesTable = functionDirectory[currentFunction]
-        for parameterName, parameterType, parameterAdress in currentVariablesTable[3]:
+        for parameterName, parameterType, parameterAdress in currentVariablesTable[4]:
             if (parameterName == variable):
                 return [parameterType, parameterAdress]
-        for variableName, variableType, variableAdress, variableSize in currentVariablesTable[4]:
+        for variableName, variableType, variableAdress, variableSize in currentVariablesTable[5]:
             if (variableName == variable):
                 return [variableType, variableAdress, variableSize]
         currentVariablesTable = functionDirectory[functionIDs[0]]
-        for variableName, variableType, variableAdress, variableSize in currentVariablesTable[4]:
+        for variableName, variableType, variableAdress, variableSize in currentVariablesTable[5]:
             if (variableName == variable):
                 return [variableType, variableAdress, variableSize]
     print('ERROR: Variable < ', variable, ' > not found!')
@@ -161,12 +161,12 @@ variable = nombre de la variable que se quiere encontrar
 def findVariable(variable):
     if (currentFunction in functionDirectory):
         currentVariablesTable = functionDirectory[currentFunction]
-        for variableName, variableType in currentVariablesTable[2]:
+        for variableName, variableType in currentVariablesTable[5]:
             if (variableName == variable):
                 print('ERROR: Variable < ', variable, ' > already exists!')
                 exit()
         currentVariablesTable = functionDirectory[functionIDs[0]]
-        for variableName, variableType in currentVariablesTable[2]:
+        for variableName, variableType in currentVariablesTable[5]:
             if (variableName == variable):
                 print('ERROR: Variable < ', variable, ' > already exists!')
                 exit()
@@ -180,12 +180,13 @@ def printFunctionDirectory():
         print('Name: ', name)
         print('Type: ', data[0])
         print('Kind: ', data[1])
-        print('Quadruple: ', data[2])
+        print('First quadruple: ', data[2])
+        print('Last quadruple: ', data[3])
         print('Parameters:')
-        for parameterName, parameterType, parameterAddress in data[3]:
+        for parameterName, parameterType, parameterAddress in data[4]:
             print('\tName: ', parameterName, ' (', parameterType, ') -> ', parameterAddress)
         print('Variables:')
-        for variableName, variableType, variableAddress, variableSize in data[4]:
+        for variableName, variableType, variableAddress, variableSize in data[5]:
             if (variableSize == None):
                 print('\tName: ', variableName, ' (', variableType, ') -> ', variableAddress)
             else:

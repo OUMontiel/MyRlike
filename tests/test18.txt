@@ -1,16 +1,9 @@
 Program MyRlike;
 VARS
-    int: a, b, c, d, e, f, g, h, i;
-
+    int: arreglo[3];
+    
 main() {
-    a = 1;
-    b = 2;
-    c = 3;
-    d = 4;
-    e = 5;
-    f = 6;
-    g = 7;
-    h = 8;
-    i = 9;
-    a * b / (c + d * f / g + h) - i > (a + b) * c - d;
+    arreglo[0] = 1;
+    arreglo[1] = 2;
+    arreglo[2] = arreglo[1] + arreglo[2];
 }

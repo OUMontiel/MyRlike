@@ -36,6 +36,8 @@ memory = la memoria virtual
 '''
 def generateQuadruple(possibleOperators, memory):
     if (len(operators) > 0 and operators[-1] in possibleOperators):
+        print(operands)
+        print(types)
         right_operand = operands.pop()
         right_type = types.pop()
         left_operand = operands.pop()
@@ -68,6 +70,7 @@ generateAssignment()
     Genera un cuádruplo de una asignación
 '''
 def generateAssignment():
+    print(operators)
     if (len(operators) > 0 and operators[-1] == '='):
         right_operand = operands.pop()
         right_type = types.pop()
@@ -81,15 +84,15 @@ def generateAssignment():
 generateReturn()
     Genera un cuádruplo de un retorno
 '''
-def generateReturn(current_function_type):
+def generateReturn(functionName, functionType):
     return_operand = operands.pop()
     return_type = types.pop()
 
-    if (return_type != current_function_type):
+    if (return_type != functionType):
         print('ERROR: Return type does not match function type!')
         exit()
     else:
-        quadruples.append(['return', None, None, return_operand])
+        quadruples.append(['return', functionName, None, return_operand])
 
 '''
 generateInput()
@@ -230,8 +233,8 @@ def forPoint2(memory):
 forPoint3()
     Tercer punto neurálgico de estatuto condicional for
 '''
-def forPoint3():
-    quadruples.append(['+', controlVariables[-1], '1', controlVariables[-1]])
+def forPoint3(counter):
+    quadruples.append(['+', controlVariables[-1], counter, controlVariables[-1]])
     controlVariables.pop()
     end_index = jumps.pop()
     return_index = jumps.pop()
@@ -246,7 +249,7 @@ def funcionPoint1(functionName, functionDirectory):
     if (functionName in functionDirectory):
         quadruples.append(['era', functionName, None, None])
         functionNames.append(functionName)
-        functionParametersTables.append(functionDirectory[functionName][3])
+        functionParametersTables.append(functionDirectory[functionName][4])
         functionParameterIndex.append(0)
     else:
         print('ERROR: Function < ', functionName, ' > does not exist!')
@@ -257,15 +260,17 @@ funcionPoint2()
     Segundo punto neurálgico de estatuto modular
 '''
 def funcionPoint2():
-    parameter_name = operands.pop()
-    parameter_type = types.pop()
+    parameter_type = functionParametersTables[-1][functionParameterIndex[-1]][1]
+    parameter_address = functionParametersTables[-1][functionParameterIndex[-1]][2]
+    variable_name = operands.pop()
+    variable_type = types.pop()
 
-    if (parameter_type != functionParametersTables[-1][functionParameterIndex[-1]][1]):
+    if (variable_type != parameter_type):
         print('ERROR: Parameter type does not match function signature!')
         exit()
     else:
         functionParameterIndex[-1] = functionParameterIndex[-1] + 1
-        quadruples.append(['param', parameter_name, None, 'param' + str(functionParameterIndex[-1])])
+        quadruples.append(['param', variable_name, None, parameter_address])
 
 '''
 funcionPoint3()

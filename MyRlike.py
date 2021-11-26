@@ -212,6 +212,7 @@ def p_programa(p):
     programa : PROGRAM programa_punto1 programa1 programa2 main OPENPAR CLOSEPAR OPENCURLY programa3 CLOSECURLY
     '''
     print('programa')
+    FunctionDirectory.functionDirectory[FunctionDirectory.currentFunction][3] = len(CodeGeneration.quadruples)
     CodeGeneration.quadruples.append(['end', None, None, None])
     VirtualMemory.memory[0].clear()
     VirtualMemory.memory[1].clear()
@@ -323,7 +324,7 @@ def p_lista_ids(p):
 
 def p_lista_ids1(p):
     '''
-    lista_ids1 : ID OPENBOX exp CLOSEBOX
+    lista_ids1 : ID OPENBOX block exp CLOSEBOX unblock
     '''
     print('lista_ids1')
     if (CodeGeneration.types.pop() != 'int'):
@@ -425,7 +426,8 @@ def p_funciones_punto2(p):
     funciones_punto2 : epsilon
     '''
     print('funciones_punto2')
-    CodeGeneration.quadruples.append(['endfunc', None, None, None])
+    FunctionDirectory.functionDirectory[FunctionDirectory.currentFunction][3] = len(CodeGeneration.quadruples)
+    CodeGeneration.quadruples.append(['endfunc', FunctionDirectory.currentFunction, None, None])
     CodeGeneration.results.clear()
     CodeGeneration.resultsTypes.clear()
     VirtualMemory.eraseLocal()
@@ -470,11 +472,12 @@ def p_asignacion(p):
     asignacion : asignacion1 expresion SEMICOLON
     '''
     print('asignacion')
+    print('heeeeeeeeereeeeeeeeeeeeeeeeee')
     CodeGeneration.generateAssignment()
 
 def p_asignacion1(p):
     '''
-    asignacion1 : ID OPENBOX exp CLOSEBOX IS
+    asignacion1 : ID OPENBOX block exp CLOSEBOX IS unblock
                 | ID IS
     '''
     print('asignacion1')
@@ -488,7 +491,7 @@ def p_asignacion1(p):
             exit()
         arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
         CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
-        CodeGeneration.operators.append(p[5])
+        CodeGeneration.operators.append(p[6])
     else:
         variableData = FunctionDirectory.getVariableData(p[1])
         CodeGeneration.operands.append(variableData[1])
@@ -547,7 +550,7 @@ def p_retorno(p):
     retorno : RETURN OPENPAR exp CLOSEPAR SEMICOLON
     '''
     print('retorno')
-    CodeGeneration.generateReturn(FunctionDirectory.functionTypes[FunctionDirectory.functionIDs.index(FunctionDirectory.currentFunction)])
+    CodeGeneration.generateReturn(FunctionDirectory.currentFunction, FunctionDirectory.functionDirectory[FunctionDirectory.currentFunction][0])
 
 def p_lectura(p):
     '''
@@ -676,7 +679,7 @@ def p_for(p):
 
 def p_for1(p):
     '''
-    for1 : ID OPENBOX exp CLOSEBOX
+    for1 : ID OPENBOX block exp CLOSEBOX unblock
          | ID
     '''
     print('for1')
@@ -714,7 +717,7 @@ def p_for_punto3(p):
     for_punto3 : epsilon
     '''
     print('for_punto3')
-    CodeGeneration.forPoint3()
+    CodeGeneration.forPoint3(VirtualMemory.storeConstant(1, 'int'))
 
 def p_est_exp(p):
     '''
@@ -825,6 +828,7 @@ def p_exp1(p):
          | MINUS
     '''
     print('exp1')
+    print('heeeeeeeeeeeeeeeeey -> 32')
     CodeGeneration.operators.append(p[1])
 
 def p_generate_exp(p):
@@ -832,6 +836,7 @@ def p_generate_exp(p):
     generate_exp : epsilon
     '''
     print('generate_exp')
+    print('heeeeeeeeeeeeeeeeey -> 33')
     CodeGeneration.generateQuadruple(['+', '-'], VirtualMemory.memory)
 
 def p_termino(p):
@@ -860,7 +865,7 @@ def p_generate_termino(p):
 def p_factor(p):
     '''
     factor : factor1
-           | openpar expresion closepar
+           | OPENPAR block expresion CLOSEPAR unblock
            | funcion
            | factor2 varcte
     '''
@@ -868,11 +873,12 @@ def p_factor(p):
 
 def p_factor1(p):
     '''
-    factor1 : ID OPENBOX exp CLOSEBOX
+    factor1 : ID OPENBOX block exp CLOSEBOX unblock
             | ID
     '''
     print('factor1')
     if (len(p) > 2):
+        print('hooooooooooooooooooy -> 37 -> ', p[1], p[2], p[3], p[4])
         if (CodeGeneration.types.pop() != 'int'):
             print('ERROR: Array size has to be of type integer!')
             exit()
@@ -883,6 +889,7 @@ def p_factor1(p):
         arrayData = [CodeGeneration.operands.pop(), VirtualMemory.storeConstant('0', 'int'), VirtualMemory.storeConstant(str(variableData[2]), 'int')]
         CodeGeneration.arregloPoint1(variableData[0], VirtualMemory.storeConstant(variableData[1], 'int'), arrayData, VirtualMemory.memory)
     else:
+        print('hooooooooooooooooooy -> 37 -> ', p[1])
         variableData = FunctionDirectory.getVariableData(p[1])
         CodeGeneration.operands.append(variableData[1])
         CodeGeneration.types.append(variableData[0])
@@ -901,18 +908,18 @@ def p_factor2(p):
     else:
         CodeGeneration.extraOperator = ''
 
-def p_openpar(p):
+def p_block(p):
     '''
-    openpar : OPENPAR
+    block : epsilon
     '''
-    print('openpar')
-    CodeGeneration.operators.append(p[1])
+    print('block')
+    CodeGeneration.operators.append('block')
 
-def p_closepar(p):
+def p_unblock(p):
     '''
-    closepar : CLOSEPAR
+    unblock : epsilon
     '''
-    print('closepar')
+    print('unblock')
     CodeGeneration.operators.pop()
 
 def p_varcte(p):
@@ -956,7 +963,6 @@ def p_char(p):
     CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'char'))
     CodeGeneration.types.append('char')
 
-
 def p_epsilon(p):
     '''
     epsilon :
@@ -988,8 +994,8 @@ while True:
     parser.parse(''.join(s).replace('\n', ' '))
     print('\n\n> ------------------------------------------------------------ <\n                  Directorio de Procedimientos                  \n> ------------------------------------------------------------ <')
     FunctionDirectory.printFunctionDirectory()
-    print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
-    SemanticCube.printSemanticCube()
+    #print('\n\n> ------------------------------------------------------------ <\n                         Cubo Semántico                         \n> ------------------------------------------------------------ <')
+    #SemanticCube.printSemanticCube()
     print('\n> ------------------------------------------------------------ <\n                         Memoria Virtual                        \n> ------------------------------------------------------------ <')
     VirtualMemory.printMemory()
     print('\n\n> ------------------------------------------------------------ <\n                           Cuádruplos                           \n> ------------------------------------------------------------ <')

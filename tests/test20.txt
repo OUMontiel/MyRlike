@@ -1,0 +1,78 @@
+Program MyRlike;
+VARS
+    int: var1, a, b, c, d, e, f, g, h, i, arreglo[10];
+    float: var2;
+    char: var3;
+
+function void myFunction() {
+    write("in my function");
+}
+
+function void mySecondFunction(int parametro1, float parametro2, char parametro3) {
+    write("in my second function");
+    parametro1 = 4;
+    parametro2 = 4.4;
+    parametro3 = 'g';
+    write(parametro1);
+    write(parametro2);
+    write(parametro3);
+    myFunction();
+}
+
+function int myThirdFunction() {
+    write("in my third function");
+    return(333);
+}
+
+main() {
+    a = 1;
+    b = 2;
+    c = 3;
+    d = 4;
+    e = 5;
+    f = 6;
+    g = 7;
+    h = 8;
+    i = 9;
+    a * b / (c + d * f / g + h) - i > (a + b) * c - d;
+
+    write("asdf", 1);
+    read(var1);
+    read(var2);
+    read(var3);
+
+    if (1) then {
+        write("if");
+    }
+    else {
+        write("else");
+    }
+
+    while (i > 0) do {
+        i = i - 1;
+        write("while");
+    }
+
+    mySecondFunction(var1, var2, var3);
+    write(var1);
+    write(var2);
+    write(var3);
+
+    a = myThirdFunction();
+    write("here");
+
+    arreglo[0] = 10;
+    arreglo[1] = 20;
+    arreglo[2] = 30;
+    arreglo[3] = 40;
+    arreglo[4] = 50;
+    arreglo[5] = 60;
+    arreglo[6] = 70;
+    arreglo[7] = 80;
+    arreglo[8] = 90;
+    arreglo[9] = arreglo[8] + arreglo[7];
+
+    for i = 0 to 10 do {
+        write(arreglo[i]);
+    }
+}

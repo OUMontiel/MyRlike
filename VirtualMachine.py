@@ -123,23 +123,184 @@ def getType(address):
 '''
 runAssignment()
 quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
 virtualMemory = la memoria de la máquina virtual
+returnTable = diccionario con valor de retorno de cada función
     Ejectuta el cuádruplo de asignación
 '''
-def runAssignment(quadruple, virtualMemory):
-    right_operand = getContent(quadruple[1], virtualMemory)
-    if (right_operand == None):
-        print('ERROR: Variables have not been assigned!')
+def runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable):
+    # Si el contenido a asignar es el nombre de una función, regresar su valor de retorno
+    if (quadruple[1] in returnTable):
+        setContent(returnTable[quadruple[1]], quadruple[3], virtualMemory)
+    else:
+        right_operand = getContent(quadruple[1], virtualMemory)
+        if (right_operand == None):
+            print('ERROR: Variables have not been assigned!')
+            exit()
+        # Si la dirección de memoria es de tipo apuntador, accesar la dirección de su valor
+        if (quadruple[3] >= 10000 and quadruple[3] <= 12999):
+            setContent(right_operand, getContent(quadruple[3], virtualMemory), virtualMemory)
+        else:
+            setContent(right_operand, quadruple[3], virtualMemory)
+    return quadruplePointer + 1
+
+'''
+runReturn()
+quadruple = cuádruplo de asignación que se correrá
+virtualMemory = la memoria de la máquina virtual
+functionDirectory = directorio de funcionamiento generado por el compilador
+returnTable = diccionario con valor de retorno de cada función
+    Ejectuta el cuádruplo de retorno
+'''
+def runReturn(quadruple, virtualMemory, functionDirectory, returnTable):
+    returnTable[quadruple[1]] = getContent(quadruple[3], virtualMemory)
+    return functionDirectory[quadruple[1]][3]
+
+'''
+runRead()
+quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de lectura
+'''
+def runRead(quadruple, quadruplePointer, virtualMemory):
+    varType = getType(quadruple[3])
+    var = input()
+    if (varType == 'int'):
+        try:
+            int(var)
+            setContent(var, quadruple[3], virtualMemory)
+        except ValueError:
+            print('ERROR: Input value is not the correct type!')
+            exit()
+    elif (varType == 'float'):
+        try:
+            float(var)
+            setContent(var, quadruple[3], virtualMemory)
+        except ValueError:
+            print('ERROR: Input value is not the correct type!')
+            exit()
+    elif (varType == 'char'):
+        if (len(var) == 1):
+            setContent(var, quadruple[3], virtualMemory)
+        else:
+            print('ERROR: Input value is not the correct type!')
+            exit()
+    return quadruplePointer + 1
+
+'''
+runWrite()
+quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de escritura
+'''
+def runWrite(quadruple, quadruplePointer, virtualMemory):
+    if (quadruple[1] == None):
+        if (quadruple[3] >= 10000 and quadruple[3] <= 12999):
+            print(getContent(getContent(quadruple[3], virtualMemory), virtualMemory))
+        else:
+            print(getContent(quadruple[3], virtualMemory))
+    else:
+        address = quadruple[3]
+        string = ''
+        for i in range(quadruple[1]):
+            string += getContent(address + i, virtualMemory)
+        print(string)
+    return quadruplePointer + 1
+
+'''
+runGotof()
+quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de GOTOF
+'''
+def runGotof(quadruple, quadruplePointer, virtualMemory):
+    if (getContent(quadruple[1], virtualMemory) == 0):
+        return quadruple[3]
+    else:
+        return quadruplePointer + 1
+
+'''
+runGoto()
+quadruple = cuádruplo de asignación que se correrá
+    Ejectuta el cuádruplo de GOTO
+'''
+def runGoto(quadruple):
+    return quadruple[3]
+
+'''
+runEra()
+quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de ERA
+'''
+def runEra(quadruplePointer, virtualMemory):
+    virtualMemory[1].append(generateLocalMemory())
+    virtualMemory[2].append(generateLocalMemory())
+    virtualMemory[3].append(generateLocalMemory())
+    return quadruplePointer + 1
+
+'''
+runParam()
+quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de PARAM
+'''
+def runParam(quadruple, quadruplePointer, virtualMemory):
+    setContent(getContent(quadruple[1], virtualMemory), quadruple[3], virtualMemory)
+    return quadruplePointer + 1
+
+'''
+runGosub()
+quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
+pointerStack = pila de apuntadores cuyo valor final contiene el índice del cuádruplo al que se tiene que regresar
+functionDirectory = directorio de funcionamiento generado por el compilador
+    Ejectuta el cuádruplo de GOSUB
+'''
+def runGosub(quadruple, quadruplePointer, pointerStack, functionDirectory):
+    pointerStack.append(quadruplePointer + 1)
+    return functionDirectory[quadruple[1]][2]
+
+'''
+runVer()
+quadruple = cuádruplo de asignación que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+    Ejectuta el cuádruplo de VER
+'''
+def runVer(quadruple, quadruplePointer, virtualMemory):
+    variable = getContent(quadruple[1], virtualMemory)
+    lowerLimit = getContent(quadruple[2], virtualMemory)
+    upperLimit = getContent(quadruple[3], virtualMemory)
+    if (variable < lowerLimit or variable >= upperLimit):
+        print('ERROR: Value < ', variable, ' > is not within the limits of the array!')
         exit()
-    setContent(right_operand, quadruple[3], virtualMemory)
+    return quadruplePointer + 1
+
+'''
+runEndfunc()
+virtualMemory = la memoria de la máquina virtual
+pointerStack = pila de apuntadores cuyo valor final contiene el índice del cuádruplo al que se tiene que regresar
+    Ejectuta el cuádruplo de ENDFUNC
+'''
+def runEndfunc(virtualMemory, pointerStack):
+    virtualMemory[1].pop()
+    virtualMemory[2].pop()
+    virtualMemory[3].pop()
+    return pointerStack.pop()
 
 '''
 runExpression()
 quadruple = cuádruplo de una expresión que se correrá
+quadruplePointer = contador que apunta al cuádruplo actual
 virtualMemory = la memoria de la máquina virtual
     Ejectuta el cuádruplo de la expresión
 '''
-def runExpression(quadruple, virtualMemory):
+def runExpression(quadruple, quadruplePointer, virtualMemory):
     left_type = getType(quadruple[1])
     right_type = getType(quadruple[2])
     left_operand = getContent(quadruple[1], virtualMemory)
@@ -147,8 +308,13 @@ def runExpression(quadruple, virtualMemory):
     if (left_operand == None or right_operand == None):
         print('ERROR: Variables have not been assigned!')
         exit()
+    if (quadruple[1] >= 10000 and quadruple[1] <= 12999):
+        left_operand = getContent(left_operand, virtualMemory)
+    if (quadruple[2] >= 10000 and quadruple[2] <= 12999):
+        right_operand = getContent(right_operand, virtualMemory)
     value = calculateExpression(quadruple[0], left_operand, right_operand, left_type, right_type)
     setContent(value, quadruple[3], virtualMemory)
+    return quadruplePointer + 1
 
 '''
 calculateExpression()
@@ -160,6 +326,12 @@ right_type = tipo de dato del operando derecho
     Calcula la expresión y regresa el valor resultante
 '''
 def calculateExpression(operator, left_operand, right_operand, left_type, right_type):
+    # Obtener valores ASCII de valores tipo 'char'
+    if (left_type == 'char'):
+        left_operand = ord(left_operand)
+    if (right_type == 'char'):
+        right_operand = ord(right_operand)
+
     if (operator == '||'):
         return 1 if left_operand or right_operand else 0
     elif (operator == '&&'):
@@ -177,19 +349,41 @@ def calculateExpression(operator, left_operand, right_operand, left_type, right_
     elif (operator == '>='):
         return 1 if left_operand >= right_operand else 0
     elif (operator == '+'):
-        return left_operand + right_operand
+        if (left_type == 'char' or right_type == 'char'):
+            return chr(left_operand + right_operand)
+        else:
+            return left_operand + right_operand
     elif (operator == '-'):
-        return left_operand - right_operand
+        if (left_type == 'char' or right_type == 'char'):
+            return chr(left_operand - right_operand)
+        else:
+            return left_operand - right_operand
     elif (operator == '*'):
-        return left_operand * right_operand
+        if (left_type == 'char' or right_type == 'char'):
+            return chr(left_operand * right_operand)
+        else:
+            return left_operand * right_operand
     elif (operator == '/'):
-        if (left_type == 'int' and right_type == 'int'):
+        if (left_type == 'char' or right_type == 'char'):
+            return chr(left_operand // right_operand)
+        elif (left_type == 'int' and right_type == 'int'):
             return left_operand // right_operand
         else:
             return left_operand / right_operand
     elif (operator == '%'):
-        return left_operand % right_operand
+        if (left_type == 'char' or right_type == 'char'):
+            return chr(left_operand % right_operand)
+        else:
+            return left_operand % right_operand
 
+'''
+runProgram()
+functionDirectory = directorio de funcionamiento generado por el compilador
+semanticCube = la tabla de consideraciones semánticas
+memory = la memoria que proviene del compilador
+quadruples = la lista de cuádruplos generados por el compilador
+    Corre el programa ejecutando los cuádruplos
+'''
 def runProgram(functionDirectory, semanticCube, memory, quadruples):
     globalMemory = generateGlobalMemory()
     localMemory = [generateLocalMemory()]
@@ -198,53 +392,38 @@ def runProgram(functionDirectory, semanticCube, memory, quadruples):
     constantMemory = generateConstantMemory()
     storeConstants(constantMemory, memory)
     virtualMemory = [globalMemory, localMemory, temporalMemory, temporalPointerMemory, constantMemory]
+    pointerStack = []
+    returnTable = {}
 
     quadruplePointer = 0
     while True:
         quadruple = quadruples[quadruplePointer]
         if (quadruple[0] == '='):
-            runAssignment(quadruple, virtualMemory)
-            quadruplePointer += 1
+            quadruplePointer = runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable)
         elif (quadruple[0] == 'return'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runReturn(quadruple, virtualMemory, functionDirectory, returnTable)
         elif (quadruple[0] == 'read'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runRead(quadruple, quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'write'):
-            print(quadruple[0])
-            quadruplePointer += 1
-        elif (quadruple[0] == 'write'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runWrite(quadruple, quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'gotof'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runGotof(quadruple, quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'goto'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runGoto(quadruple)
         elif (quadruple[0] == 'era'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runEra(quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'param'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runParam(quadruple, quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'gosub'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runGosub(quadruple, quadruplePointer, pointerStack, functionDirectory)
         elif (quadruple[0] == 'ver'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runVer(quadruple, quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'endfunc'):
-            print(quadruple[0])
-            quadruplePointer += 1
+            quadruplePointer = runEndfunc(virtualMemory, pointerStack)
         elif (quadruple[0] == 'end'):
-            print(quadruple[0])
-            quadruplePointer += 1
             break
         else:
-            runExpression(quadruple, virtualMemory)
-            quadruplePointer += 1
+            quadruplePointer = runExpression(quadruple, quadruplePointer, virtualMemory)
 
 # Ejecutar el programa de un archivo introducido por el usuario
 while True:
