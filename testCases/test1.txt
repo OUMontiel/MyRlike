@@ -20,5 +20,5 @@ VARS
 }
 
 main() {
-    write(factorial(-4));
+    write(factorial(8));
 }

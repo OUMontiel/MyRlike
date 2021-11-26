@@ -13,11 +13,11 @@ VARS
             return(1);
         }
         else {
-            return(n * factorial(n - 1));
+            return(factorial(n - 1) * n);
         }
     }
 }
 
 main() {
-    write(factorial(4));
+    write(factorial(8));
 }

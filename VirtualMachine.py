@@ -131,7 +131,7 @@ returnTable = diccionario con valor de retorno de cada función
 def runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable):
     # Si el contenido a asignar es el nombre de una función, regresar su valor de retorno
     if (quadruple[1] in returnTable):
-        setContent(returnTable[quadruple[1]], quadruple[3], virtualMemory)
+        setContent(returnTable[quadruple[1]].pop(), quadruple[3], virtualMemory)
     else:
         right_operand = getContent(quadruple[1], virtualMemory)
         address = quadruple[3]
@@ -157,7 +157,7 @@ returnTable = diccionario con valor de retorno de cada función
     Ejectuta el cuádruplo de retorno
 '''
 def runReturn(quadruple, virtualMemory, functionDirectory, returnTable):
-    returnTable[quadruple[1]] = getContent(quadruple[3], virtualMemory)
+    returnTable[quadruple[1]].append(getContent(quadruple[3], virtualMemory))
     return functionDirectory[quadruple[1]][3]
 
 '''
@@ -237,13 +237,13 @@ def runGoto(quadruple):
 '''
 runEra()
 quadruplePointer = contador que apunta al cuádruplo actual
-virtualMemory = la memoria de la máquina virtual
+localMemory = instancia de memoria que se utilizará para la nueva función
     Ejectuta el cuádruplo de ERA
 '''
-def runEra(quadruplePointer, virtualMemory):
-    virtualMemory[1].append(generateLocalMemory())
-    virtualMemory[2].append(generateLocalMemory())
-    virtualMemory[3].append(generateLocalMemory())
+def runEra(quadruplePointer, localMemory):
+    localMemory.append(generateLocalMemory())
+    localMemory.append(generateTemporalMemory())
+    localMemory.append(generateTemporalPointerMemory())
     return quadruplePointer + 1
 
 '''
@@ -251,21 +251,34 @@ runParam()
 quadruple = cuádruplo de asignación que se correrá
 quadruplePointer = contador que apunta al cuádruplo actual
 virtualMemory = la memoria de la máquina virtual
+localMemory = instancia de memoria que se utilizará para la nueva función
     Ejectuta el cuádruplo de PARAM
 '''
-def runParam(quadruple, quadruplePointer, virtualMemory):
-    setContent(getContent(quadruple[1], virtualMemory), quadruple[3], virtualMemory)
+def runParam(quadruple, quadruplePointer, virtualMemory, localMemory):
+    value = getContent(quadruple[1], virtualMemory)
+    address = quadruple[3]
+    if (address >= 4000 and address <= 6999):
+        localMemory[0][(address // 1000 + 2) % 3][address] = value
+    elif (address >= 7000 and address <= 9999):
+        localMemory[1][(address // 1000 + 2) % 3][address] = value
+    elif (address >= 10000 and address <= 12999):
+        localMemory[2][(address // 1000 + 2) % 3][address] = value
     return quadruplePointer + 1
 
 '''
 runGosub()
 quadruple = cuádruplo de asignación que se correrá
 quadruplePointer = contador que apunta al cuádruplo actual
+virtualMemory = la memoria de la máquina virtual
+localMemory = instancia de memoria que se utilizará para la nueva función
 pointerStack = pila de apuntadores cuyo valor final contiene el índice del cuádruplo al que se tiene que regresar
 functionDirectory = directorio de funcionamiento generado por el compilador
     Ejectuta el cuádruplo de GOSUB
 '''
-def runGosub(quadruple, quadruplePointer, pointerStack, functionDirectory):
+def runGosub(quadruple, quadruplePointer, virtualMemory, localMemory, pointerStack, functionDirectory):
+    virtualMemory[3].append(localMemory.pop())
+    virtualMemory[2].append(localMemory.pop())
+    virtualMemory[1].append(localMemory.pop())
     pointerStack.append(quadruplePointer + 1)
     return functionDirectory[quadruple[1]][2]
 
@@ -401,13 +414,18 @@ def runProgram(functionDirectory, semanticCube, memory, quadruples):
     constantMemory = generateConstantMemory()
     storeConstants(constantMemory, memory)
     virtualMemory = [globalMemory, localMemory, temporalMemory, temporalPointerMemory, constantMemory]
+    localMemory = []
     pointerStack = []
     returnTable = {}
+
+    # Llenar tabla de retornos con pilas vacías para cada función
+    for function in functionDirectory:
+        returnTable[function] = []
 
     quadruplePointer = 0
     while True:
         quadruple = quadruples[quadruplePointer]
-        #print(quadruple)
+        print(quadruple)
         if (quadruple[0] == '='):
             quadruplePointer = runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable)
         elif (quadruple[0] == 'return'):
@@ -421,11 +439,11 @@ def runProgram(functionDirectory, semanticCube, memory, quadruples):
         elif (quadruple[0] == 'goto'):
             quadruplePointer = runGoto(quadruple)
         elif (quadruple[0] == 'era'):
-            quadruplePointer = runEra(quadruplePointer, virtualMemory)
+            quadruplePointer = runEra(quadruplePointer, localMemory)
         elif (quadruple[0] == 'param'):
-            quadruplePointer = runParam(quadruple, quadruplePointer, virtualMemory)
+            quadruplePointer = runParam(quadruple, quadruplePointer, virtualMemory, localMemory)
         elif (quadruple[0] == 'gosub'):
-            quadruplePointer = runGosub(quadruple, quadruplePointer, pointerStack, functionDirectory)
+            quadruplePointer = runGosub(quadruple, quadruplePointer, virtualMemory, localMemory, pointerStack, functionDirectory)
         elif (quadruple[0] == 'ver'):
             quadruplePointer = runVer(quadruple, quadruplePointer, virtualMemory)
         elif (quadruple[0] == 'endfunc'):
