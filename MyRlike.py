@@ -924,14 +924,12 @@ def p_unblock(p):
 
 def p_varcte(p):
     '''
-    varcte : ID
-           | int
+    varcte : int
            | float
            | char
     '''
     print('varcte')
     if (p[1] != None):
-        #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
         variableData = FunctionDirectory.getVariableData(p[1])
         CodeGeneration.operands.append(variableData[1])
         CodeGeneration.types.append(variableData[0])
@@ -941,8 +939,7 @@ def p_int(p):
     int : INT
     '''
     print('int')
-    #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
-    CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'int'))
+    CodeGeneration.operands.append(VirtualMemory.storeConstant(''.join([CodeGeneration.extraOperator, str(p[1])]), 'int'))
     CodeGeneration.types.append('int')
 
 def p_float(p):
@@ -950,8 +947,7 @@ def p_float(p):
     float : FLOAT
     '''
     print('float')
-    #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
-    CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'float'))
+    CodeGeneration.operands.append(VirtualMemory.storeConstant(''.join([CodeGeneration.extraOperator, str(p[1])]), 'float'))
     CodeGeneration.types.append('float')
 
 def p_char(p):
@@ -959,8 +955,7 @@ def p_char(p):
     char : CHAR
     '''
     print('char')
-    #CodeGeneration.operands.append(''.join([CodeGeneration.extraOperator, str(p[1])]))
-    CodeGeneration.operands.append(VirtualMemory.storeConstant(p[1], 'char'))
+    CodeGeneration.operands.append(VirtualMemory.storeConstant(''.join([CodeGeneration.extraOperator, str(p[1])]), 'char'))
     CodeGeneration.types.append('char')
 
 def p_epsilon(p):

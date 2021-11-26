@@ -3,15 +3,15 @@ VARS
     int: a;
 
 function int fibonacci(int n) {
-    if (n <= 0) then {
+    if (n < 0) then {
         return(-1);
     }
     else {
-        if (n == 1) then {
-            return(1);
+        if (n == 0) then {
+            return(0);
         }
         else {
-            if (n == 2) then {
+            if (n == 1) then {
                 return(1);
             }
             else {

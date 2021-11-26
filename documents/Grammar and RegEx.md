@@ -55,7 +55,7 @@ TERMINO1 → * | / | %
 FACTOR → FACTOR1 | ( EXPRESION ) | FUNCION | FACTOR2 cte  
 FACTOR1 → id [ EXP ] | id  
 FACTOR2 → + | - | ε  
-VARCTE → id | cte-l | cte-f | cte-c  
+VARCTE → cte-l | cte-f | cte-c  
 
 
 ---

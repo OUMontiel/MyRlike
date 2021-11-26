@@ -134,14 +134,18 @@ def runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable):
         setContent(returnTable[quadruple[1]], quadruple[3], virtualMemory)
     else:
         right_operand = getContent(quadruple[1], virtualMemory)
+        address = quadruple[3]
+        # Si la dirección de memoria es de tipo apuntador, accesar la dirección de su valor
+        if (quadruple[1] >= 10000 and quadruple[1] <= 12999):
+            right_operand = getContent(right_operand, virtualMemory)
+        # Si la dirección de memoria es de tipo apuntador, accesar la dirección de su valor
+        if (quadruple[3] >= 10000 and quadruple[3] <= 12999):
+            address = getContent(address, virtualMemory)
+
         if (right_operand == None):
             print('ERROR: Variables have not been assigned!')
             exit()
-        # Si la dirección de memoria es de tipo apuntador, accesar la dirección de su valor
-        if (quadruple[3] >= 10000 and quadruple[3] <= 12999):
-            setContent(right_operand, getContent(quadruple[3], virtualMemory), virtualMemory)
-        else:
-            setContent(right_operand, quadruple[3], virtualMemory)
+        setContent(right_operand, address, virtualMemory)
     return quadruplePointer + 1
 
 '''
@@ -328,7 +332,12 @@ right_type = tipo de dato del operando derecho
 def calculateExpression(operator, left_operand, right_operand, left_type, right_type):
     # Obtener valores ASCII de valores tipo 'char'
     if (left_type == 'char'):
-        left_operand = ord(left_operand)
+        if (left_operand[0] == '+'):
+            left_operand = ord(left_operand[1:])
+        if (left_operand[0] == '-'):
+            left_operand = (-1) * ord(left_operand[1:])
+        else:
+            left_operand = ord(left_operand)
     if (right_type == 'char'):
         right_operand = ord(right_operand)
 
@@ -398,6 +407,7 @@ def runProgram(functionDirectory, semanticCube, memory, quadruples):
     quadruplePointer = 0
     while True:
         quadruple = quadruples[quadruplePointer]
+        #print(quadruple)
         if (quadruple[0] == '='):
             quadruplePointer = runAssignment(quadruple, quadruplePointer, virtualMemory, returnTable)
         elif (quadruple[0] == 'return'):

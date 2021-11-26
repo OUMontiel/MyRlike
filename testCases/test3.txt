@@ -5,17 +5,17 @@ VARS
 function int fibonacci(int n)
 VARS
     int: i, n1, n2, result; {
-    n1 = 1;
+    n1 = 0;
     n2 = 1;
-    if (n <= 0) then {
+    if (n < 0) then {
         return(-1);
     }
     else {
-        if (n == 1) then {
+        if (n == 0) then {
             return(n1);
         }
         else {
-            if (n == 2) then {
+            if (n == 1) then {
                 return(n2);
             }
             else {

@@ -29,8 +29,14 @@ main() {
     arreglo[8] = 28;
     arreglo[9] = 95;
 
+    write("Before sort");
+    for i = 0 to n do {
+        write(arreglo[i]);
+    }
+
     sort();
 
+    write("After sort");
     for i = 0 to n do {
         write(arreglo[i]);
     }

@@ -1,6 +1,8 @@
 Program patito;
 VARS
     int: a;
+    float: b;
+    char: c;
 
 function int factorial(int n)
 VARS
@@ -18,5 +20,5 @@ VARS
 }
 
 main() {
-    write(factorial(4));
+    write(factorial(-4));
 }
