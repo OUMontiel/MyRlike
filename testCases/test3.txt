@@ -1,6 +1,4 @@
 Program patito;
-VARS
-    int: a;
 
 function int fibonacci(int n)
 VARS

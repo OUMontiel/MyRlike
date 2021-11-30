@@ -1,10 +1,6 @@
 Program patito;
-VARS
-    int: a;
 
-function int factorial(int n)
-VARS
-    int: i, result; {
+function int factorial(int n) {
     if (n < 0) then {
         return(-1);
     }
